@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADSv - Registro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="mx-auto h-12 w-auto flex justify-center">
+                <h2 class="text-3xl font-bold text-gray-900">ADSv</h2>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Crear Cuenta
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Únete a nuestra plataforma de servicios
+            </p>
+        </div>
+        
+        <form id="registerForm" class="mt-8 space-y-6">
+            <!-- Tipo de Usuario -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Usuario</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="userType" value="client" class="sr-only" checked>
+                        <div class="user-type-card border-2 border-gray-300 bg-white rounded-lg p-4 text-center transition-all duration-200">
+                            <i class="fas fa-user text-2xl text-gray-500 mb-2"></i>
+                            <p class="font-medium text-gray-700">Cliente</p>
+                            <p class="text-xs text-gray-600">Solicitar servicios</p>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="userType" value="worker" class="sr-only">
+                        <div class="user-type-card border-2 border-gray-300 bg-white rounded-lg p-4 text-center transition-all duration-200">
+                            <i class="fas fa-tools text-2xl text-gray-500 mb-2"></i>
+                            <p class="font-medium text-gray-700">Trabajador</p>
+                            <p class="text-xs text-gray-600">Ofrecer servicios</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="space-y-4">
+                <div>
+                    <label for="fullName" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
+                    <input id="fullName" name="fullName" type="text" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="Tu nombre completo">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                    <input id="email" name="email" type="email" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="tu@email.com">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input id="phone" name="phone" type="tel" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="999 999 999">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input id="password" name="password" type="password" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password" required 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="Repite tu contraseña">
+                </div>
+            </div>
+
+            <!-- Campos específicos para trabajadores -->
+            <div id="workerFields" class="space-y-4 hidden">
+                <div>
+                    <label for="serviceType" class="block text-sm font-medium text-gray-700">Tipo de Servicio</label>
+                    <select id="serviceType" name="serviceType" 
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Selecciona tu especialidad</option>
+                        <option value="Carpintería">Carpintería</option>
+                        <option value="Electricista">Electricista</option>
+                        <option value="Plomería">Plomería</option>
+                        <option value="Pintor">Pintor</option>
+                        <option value="Jardinería">Jardinería</option>
+                        <option value="Albañilería">Albañilería</option>
+                        <option value="Ferretería">Ferretería</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="experience" class="block text-sm font-medium text-gray-700">Años de Experiencia</label>
+                    <input id="experience" name="experience" type="number" min="0" max="50" 
+                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           placeholder="0">
+                </div>
+            </div>
+
+            <!-- Error Messages -->
+            <div id="errorMessages" class="space-y-2 hidden">
+                <div id="generalError" class="text-red-600 text-sm"></div>
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="loadingIndicator" class="text-blue-600 text-sm text-center hidden">
+                <i class="fas fa-spinner fa-spin"></i> Creando cuenta...
+            </div>
+
+            <div>
+                <button type="submit" id="registerButton"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-user-plus text-blue-500 group-hover:text-blue-400"></i>
+                    </span>
+                    Crear Cuenta
+                </button>
+            </div>
+
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    ¿Ya tienes cuenta? 
+                    <a href="login.html" class="font-medium text-blue-600 hover:text-blue-500">
+                        Inicia sesión aquí
+                    </a>
+                </p>
+                <p class="mt-2 text-sm text-gray-600">
+                    <a href="index.html" class="font-medium text-blue-600 hover:text-blue-500">
+                        Volver al inicio
+                    </a>
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+
+    <style>
+        /* Estilo por defecto para todas las tarjetas */
+        .user-type-card {
+            transition: all 0.2s ease;
+            border-color: #D1D5DB; /* gray-300 */
+            background-color: #FFFFFF; /* white */
+        }
+        
+        .user-type-card i {
+            color: #6B7280; /* gray-500 */
+        }
+        
+        .user-type-card p {
+            color: #374151; /* gray-700 para el título */
+        }
+        
+        .user-type-card p.text-xs {
+            color: #6B7280; /* gray-600 para el subtítulo */
+        }
+        
+        /* Estilo para tarjeta seleccionada */
+        input[name="userType"]:checked + .user-type-card {
+            border-color: #3B82F6 !important; /* blue-500 */
+            background-color: #EFF6FF !important; /* blue-50 */
+        }
+        
+        input[name="userType"]:checked + .user-type-card i {
+            color: #3B82F6 !important; /* blue-500 */
+        }
+        
+        input[name="userType"]:checked + .user-type-card p {
+            color: #1E40AF !important; /* blue-700 */
+        }
+        
+        input[name="userType"]:checked + .user-type-card p.text-xs {
+            color: #2563EB !important; /* blue-600 */
+        }
+        
+        /* Hover effect */
+        .user-type-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+    <script>
+        // Configuración de Firebase usando las variables de entorno
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmSX2DEjIarC3acpn2xoL5Gfe-rW6-JrE",
+            authDomain: "adsv-d87e1.firebaseapp.com",
+            databaseURL: "https://adsv-d87e1-default-rtdb.firebaseio.com",
+            projectId: "adsv-d87e1",
+            storageBucket: "adsv-d87e1.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
+        };
+
+        // Inicializar Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        class RegisterManager {
+            constructor() {
+                this.auth = firebase.auth();
+                this.database = firebase.database();
+                this.setupEventListeners();
+                this.checkAuthState();
+                this.initializeUserTypeSelection();
+            }
+
+            initializeUserTypeSelection() {
+                // Inicializar el estado visual correcto
+                this.updateUserTypeVisuals();
+            }
+
+            setupEventListeners() {
+                // Formulario de registro
+                document.getElementById('registerForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.validateAndRegister();
+                });
+
+                // Mostrar/ocultar campos específicos para trabajadores
+                document.querySelectorAll('input[name="userType"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        this.updateUserTypeVisuals();
+                        const workerFields = document.getElementById('workerFields');
+                        if (e.target.value === 'worker') {
+                            workerFields.classList.remove('hidden');
+                        } else {
+                            workerFields.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+
+            updateUserTypeVisuals() {
+                // Obtener todos los radio buttons y sus tarjetas
+                const radios = document.querySelectorAll('input[name="userType"]');
+                
+                radios.forEach(radio => {
+                    const card = radio.nextElementSibling;
+                    const icon = card.querySelector('i');
+                    const title = card.querySelector('p:first-of-type');
+                    const subtitle = card.querySelector('p:last-of-type');
+                    
+                    if (radio.checked) {
+                        // Aplicar estilos de seleccionado
+                        card.style.borderColor = '#3B82F6';
+                        card.style.backgroundColor = '#EFF6FF';
+                        icon.style.color = '#3B82F6';
+                        title.style.color = '#1E40AF';
+                        subtitle.style.color = '#2563EB';
+                    } else {
+                        // Aplicar estilos por defecto
+                        card.style.borderColor = '#D1D5DB';
+                        card.style.backgroundColor = '#FFFFFF';
+                        icon.style.color = '#6B7280';
+                        title.style.color = '#374151';
+                        subtitle.style.color = '#6B7280';
+                    }
+                });
+            }
+
+            checkAuthState() {
+                // Si el usuario ya está autenticado, redirigir
+                this.auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        const userType = await this.getUserType(user.uid);
+                        if (userType) {
+                            this.redirectUser(userType);
+                        }
+                    }
+                });
+            }
+
+            async validateAndRegister() {
+                const formData = this.getFormData();
+                
+                // Limpiar errores previos
+                this.clearErrors();
+
+                if (!this.validateForm(formData)) {
+                    return;
+                }
+
+                await this.performRegistration(formData);
+            }
+
+            getFormData() {
+                return {
+                    userType: document.querySelector('input[name="userType"]:checked').value,
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    password: document.getElementById('password').value,
+                    confirmPassword: document.getElementById('confirmPassword').value,
+                    serviceType: document.getElementById('serviceType').value,
+                    experience: document.getElementById('experience').value
+                };
+            }
+
+            validateForm(data) {
+                // Validar nombre
+                if (!data.fullName || data.fullName.length < 2) {
+                    this.showError('El nombre debe tener al menos 2 caracteres');
+                    return false;
+                }
+
+                // Validar email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(data.email)) {
+                    this.showError('Por favor, ingresa un correo válido');
+                    return false;
+                }
+
+                // Validar teléfono
+                const phoneRegex = /^\d{9,15}$/;
+                if (!phoneRegex.test(data.phone.replace(/\s/g, ''))) {
+                    this.showError('Por favor, ingresa un teléfono válido (9-15 dígitos)');
+                    return false;
+                }
+
+                // Validar contraseña
+                if (data.password.length < 6) {
+                    this.showError('La contraseña debe tener al menos 6 caracteres');
+                    return false;
+                }
+
+                if (data.password !== data.confirmPassword) {
+                    this.showError('Las contraseñas no coinciden');
+                    return false;
+                }
+
+                // Validaciones específicas para trabajadores
+                if (data.userType === 'worker') {
+                    if (!data.serviceType) {
+                        this.showError('Por favor, selecciona tu especialidad');
+                        return false;
+                    }
+                    if (!data.experience || data.experience < 0) {
+                        this.showError('Por favor, ingresa los años de experiencia');
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            async performRegistration(data) {
+                this.setLoading(true);
+                
+                try {
+                    console.log('Creando usuario con:', data.email);
+                    
+                    // Crear usuario en Firebase Auth
+                    const userCredential = await this.auth.createUserWithEmailAndPassword(data.email, data.password);
+                    const user = userCredential.user;
+                    
+                    console.log('Usuario creado:', user.uid);
+
+                    // Actualizar perfil del usuario
+                    await user.updateProfile({
+                        displayName: data.fullName
+                    });
+
+                    // Guardar información adicional en la base de datos
+                    await this.saveUserData(user.uid, data);
+                    
+                    // Mostrar mensaje de éxito
+                    this.showSuccessMessage('¡Cuenta creada exitosamente! Redirigiendo...');
+                    
+                    // Redirigir después de un breve delay
+                    setTimeout(() => {
+                        this.redirectUser(data.userType);
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Error de registro:', error);
+                    this.handleRegistrationError(error);
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            async saveUserData(uid, data) {
+                const timestamp = new Date().toISOString();
+                const commonData = {
+                    name: data.fullName,
+                    email: data.email,
+                    phone: data.phone,
+                    createdAt: timestamp,
+                    updatedAt: timestamp
+                };
+
+                if (data.userType === 'client') {
+                    // Guardar en User/Clientes
+                    await this.database.ref(`User/Clientes/${uid}`).set({
+                        ...commonData,
+                        isActive: true
+                    });
+                    
+                    console.log('Cliente guardado en la base de datos');
+                    
+                } else if (data.userType === 'worker') {
+                    // Guardar en User/Trabajadores
+                    const workerData = {
+                        ...commonData,
+                        work: data.serviceType,
+                        experience: parseInt(data.experience),
+                        isActive: true,
+                        isAvailable: true,
+                        rating: 0,
+                        completedJobs: 0
+                    };
+                    
+                    await this.database.ref(`User/Trabajadores/${uid}`).set(workerData);
+                    
+                    // También agregar a active_workers para facilitar búsquedas
+                    await this.database.ref(`active_workers/${uid}`).set({
+                        name: data.fullName,
+                        work: data.serviceType,
+                        isAvailable: true,
+                        lastSeen: timestamp
+                    });
+                    
+                    console.log('Trabajador guardado en la base de datos');
+                }
+            }
+
+            async getUserType(uid) {
+                try {
+                    // Verificar en clientes
+                    const clientRef = this.database.ref(`User/Clientes/${uid}`);
+                    const clientSnapshot = await clientRef.once('value');
+                    
+                    if (clientSnapshot.exists()) {
+                        return 'client';
+                    }
+
+                    // Verificar en trabajadores
+                    const workerRef = this.database.ref(`User/Trabajadores/${uid}`);
+                    const workerSnapshot = await workerRef.once('value');
+                    
+                    if (workerSnapshot.exists()) {
+                        return 'worker';
+                    }
+
+                    return null;
+                    
+                } catch (error) {
+                    console.error('Error al verificar tipo de usuario:', error);
+                    return null;
+                }
+            }
+
+            redirectUser(userType) {
+                console.log('Redirigiendo usuario tipo:', userType);
+                
+                if (userType === 'client') {
+                    window.location.href = 'dashboard-client.html';
+                } else if (userType === 'worker') {
+                    window.location.href = 'dashboard-worker.html';
+                } else {
+                    this.showError('Tipo de usuario no válido');
+                }
+            }
+
+            handleRegistrationError(error) {
+                let errorMessage = 'Error al crear la cuenta';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'Ya existe una cuenta con este correo electrónico';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Correo electrónico inválido';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'El registro está deshabilitado temporalmente';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'La contraseña es muy débil';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Error de conexión. Verifica tu internet';
+                        break;
+                    default:
+                        errorMessage = 'Error: ' + (error.message || 'No se pudo crear la cuenta');
+                        break;
+                }
+                
+                this.showError(errorMessage);
+            }
+
+            setLoading(isLoading) {
+                const registerButton = document.getElementById('registerButton');
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                
+                if (isLoading) {
+                    registerButton.disabled = true;
+                    loadingIndicator.classList.remove('hidden');
+                } else {
+                    registerButton.disabled = false;
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+
+            showError(message) {
+                const errorElement = document.getElementById('generalError');
+                const errorContainer = document.getElementById('errorMessages');
+                
+                if (errorElement && errorContainer) {
+                    errorElement.textContent = message;
+                    errorContainer.classList.remove('hidden');
+                }
+                
+                // Scroll hacia el error
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            showSuccessMessage(message) {
+                // Ocultar el indicador de carga
+                this.setLoading(false);
+                
+                // Mostrar mensaje de éxito
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                loadingIndicator.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+                loadingIndicator.className = 'text-green-600 text-sm text-center';
+            }
+
+            clearErrors() {
+                const errorContainer = document.getElementById('errorMessages');
+                const errorElement = document.getElementById('generalError');
+                
+                if (errorContainer && errorElement) {
+                    errorContainer.classList.add('hidden');
+                    errorElement.textContent = '';
+                }
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                new RegisterManager();
+                console.log('RegisterManager inicializado correctamente');
+            } catch (error) {
+                console.error('Error al inicializar RegisterManager:', error);
+                // Mostrar error al usuario
+                const generalError = document.getElementById('generalError');
+                const errorContainer = document.getElementById('errorMessages');
+                if (generalError && errorContainer) {
+                    generalError.textContent = 'Error al inicializar la aplicación. Recarga la página.';
+                    errorContainer.classList.remove('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

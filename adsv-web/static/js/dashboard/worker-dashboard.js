@@ -1,4 +1,74 @@
 class WorkerDashboard {  
+
+    async getCurrentPosition() {  
+    return new Promise((resolve, reject) => {  
+        if (!navigator.geolocation) {  
+            reject(new Error('Geolocalización no soportada'));  
+            return;  
+        }  
+          
+        navaigator.geolocation.getCurrentPosition(resolve, reject, {  
+            enableHighAccuracy: true,  
+            timeout: 10000,  
+            maximumAge: 60000  
+        });  
+    });  
+}  
+  
+startLocationTracking() {  
+    if (this.locationWatcher) return;  
+      
+    this.locationWatcher = navigator.geolocation.watchPosition(  
+        (position) => {  
+            this.updateLocationInDatabase(position);  
+        },  
+        (error) => {  
+            console.error('Error tracking location:', error);  
+        },  
+        {  
+            enableHighAccuracy: true,  
+            timeout: 5000,  
+            maximumAge: 60000  
+        }  
+    );  
+}  
+  
+stopLocationTracking() {  
+    if (this.locationWatcher) {  
+        navigator.geolocation.clearWatch(this.locationWatcher);  
+        this.locationWatcher = null;  
+    }  
+}  
+  
+async updateLocationInDatabase(position) {  
+    if (!this.isConnected || !this.currentUser) return;  
+      
+    try {  
+        const updates = {  
+            [`active_workers/${this.currentUser.uid}/latitude`]: position.coords.latitude,  
+            [`active_workers/${this.currentUser.uid}/longitude`]: position.coords.longitude,  
+            [`active_workers/${this.currentUser.uid}/timestamp`]: firebase.database.ServerValue.TIMESTAMP,  
+            [`User/Trabajadores/${this.currentUser.uid}/latitude`]: position.coords.latitude,  
+            [`User/Trabajadores/${this.currentUser.uid}/longitude`]: position.coords.longitude,  
+            [`User/Trabajadores/${this.currentUser.uid}/lastSeen`]: firebase.database.ServerValue.TIMESTAMP  
+        };  
+          
+        await this.database.ref().update(updates);  
+    } catch (error) {  
+        console.error('Error updating location:', error);  
+    }  
+}  
+  
+async updateLocation() {  
+    try {  
+        const position = await this.getCurrentPosition();  
+        await this.updateLocationInDatabase(position);  
+        alert('Ubicación actualizada correctamente');  
+    } catch (error) {  
+        console.error('Error updating location:', error);  
+        alert('Error al actualizar ubicación');  
+    }  
+}
     constructor() {  
         this.isConnected = false;  
         this.currentUser = null;  
@@ -254,3 +324,4 @@ class WorkerDashboard {
 document.addEventListener('DOMContentLoaded', () => {  
     new WorkerDashboard();  
 });
+

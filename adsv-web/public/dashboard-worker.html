@@ -7,123 +7,492 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">  
 </head>  
-<body class="bg-gray-50">  
-    <!-- Navbar -->  
-    <nav class="bg-white shadow-lg">  
-        <div class="max-w-7xl mx-auto px-4">  
-            <div class="flex justify-between h-16">  
+<body class="bg-gray-50 min-h-screen">  
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+            <p class="text-gray-600">Cargando dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Header -->  
+    <header class="bg-white shadow">  
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">  
+            <div class="flex justify-between items-center py-6">  
                 <div class="flex items-center">  
-                    <img src="/static/images/logo.png" alt="ADSv" class="h-8 w-auto">  
-                    <span class="ml-2 text-xl font-semibold">ADSv Trabajador</span>  
+                    <h1 class="text-2xl font-bold text-gray-900">Dashboard Trabajador</h1>  
                 </div>  
                 <div class="flex items-center space-x-4">  
-                    <div class="flex items-center space-x-2">  
-                        <span class="text-sm text-gray-600">Estado:</span>  
-                        <button id="statusToggle" class="px-3 py-1 rounded-full text-sm font-medium">  
-                            <span id="statusText">Desconectado</span>  
-                        </button>  
-                    </div>  
-                    <span id="userEmail" class="text-gray-700"></span>  
-                    <button id="logoutBtn" class="text-red-600 hover:text-red-800">  
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión  
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <span id="userName" class="text-gray-900 font-medium">Cargando...</span>
+                            <div id="userEmail" class="text-sm text-gray-500">Cargando...</div>
+                        </div>
+                    </div>
+                    <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">  
+                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión  
                     </button>  
                 </div>  
             </div>  
         </div>  
-    </nav>  
+    </header>  
   
     <!-- Main Content -->  
-    <div class="max-w-7xl mx-auto py-6 px-4">  
-        <!-- Estado y Controles -->  
-        <div class="bg-white rounded-lg shadow p-6 mb-6">  
-            <h2 class="text-xl font-bold mb-4">Control de Disponibilidad</h2>  
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">  
-                <div class="text-center">  
-                    <button id="connectBtn" class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">  
-                        <i class="fas fa-power-off mr-2"></i>  
-                        Conectarse  
-                    </button>  
-                </div>  
-                <div class="text-center">  
-                    <button id="disconnectBtn" class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50" disabled>  
-                        <i class="fas fa-stop mr-2"></i>  
-                        Desconectarse  
-                    </button>  
-                </div>  
-                <div class="text-center">  
-                    <button id="updateLocationBtn" class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors">  
-                        <i class="fas fa-map-marker-alt mr-2"></i>  
-                        Actualizar Ubicación  
-                    </button>  
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">  
+        <!-- Estado de Conexión -->  
+        <div class="bg-white overflow-hidden shadow rounded-lg mb-6">  
+            <div class="px-4 py-5 sm:p-6">  
+                <div class="flex items-center justify-between">  
+                    <div>  
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Estado de Conexión</h3>  
+                        <p class="mt-1 text-sm text-gray-500">Gestiona tu disponibilidad para recibir solicitudes</p>  
+                    </div>  
+                    <div class="flex items-center space-x-4">  
+                        <span id="statusToggle" class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">  
+                            <span id="statusText">Desconectado</span>  
+                        </span>  
+                        <button id="connectBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">  
+                            Conectar  
+                        </button>  
+                        <button id="disconnectBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 opacity-50 transition-colors duration-200" disabled>  
+                            Desconectar  
+                        </button>  
+                    </div>  
                 </div>  
             </div>  
         </div>  
   
         <!-- Estadísticas -->  
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">  
-            <div class="bg-white rounded-lg shadow p-6">  
-                <div class="flex items-center">  
-                    <div class="p-3 rounded-full bg-blue-100 text-blue-500">  
-                        <i class="fas fa-clock text-xl"></i>  
-                    </div>  
-                    <div class="ml-4">  
-                        <p class="text-sm text-gray-600">Tiempo Conectado</p>  
-                        <p id="connectedTime" class="text-2xl font-bold">0h 0m</p>  
-                    </div>  
-                </div>  
-            </div>  
-              
-            <div class="bg-white rounded-lg shadow p-6">  
-                <div class="flex items-center">  
-                    <div class="p-3 rounded-full bg-green-100 text-green-500">  
-                        <i class="fas fa-handshake text-xl"></i>  
-                    </div>  
-                    <div class="ml-4">  
-                        <p class="text-sm text-gray-600">Servicios Hoy</p>  
-                        <p id="servicesCount" class="text-2xl font-bold">0</p>  
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">  
+            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                <div class="p-5">  
+                    <div class="flex items-center">  
+                        <div class="flex-shrink-0">  
+                            <i class="fas fa-star text-yellow-400 text-2xl"></i>  
+                        </div>  
+                        <div class="ml-5 w-0 flex-1">  
+                            <dl>  
+                                <dt class="text-sm font-medium text-gray-500 truncate">Calificación</dt>  
+                                <dd class="text-lg font-medium text-gray-900" id="rating">5.0</dd>  
+                            </dl>  
+                        </div>  
                     </div>  
                 </div>  
             </div>  
-              
-            <div class="bg-white rounded-lg shadow p-6">  
-                <div class="flex items-center">  
-                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">  
-                        <i class="fas fa-star text-xl"></i>  
-                    </div>  
-                    <div class="ml-4">  
-                        <p class="text-sm text-gray-600">Calificación</p>  
-                        <p id="rating" class="text-2xl font-bold">5.0</p>  
+  
+            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                <div class="p-5">  
+                    <div class="flex items-center">  
+                        <div class="flex-shrink-0">  
+                            <i class="fas fa-briefcase text-blue-400 text-2xl"></i>  
+                        </div>  
+                        <div class="ml-5 w-0 flex-1">  
+                            <dl>  
+                                <dt class="text-sm font-medium text-gray-500 truncate">Servicios Completados</dt>  
+                                <dd class="text-lg font-medium text-gray-900" id="completedServices">0</dd>  
+                            </dl>  
+                        </div>  
                     </div>  
                 </div>  
             </div>  
-              
-            <div class="bg-white rounded-lg shadow p-6">  
-                <div class="flex items-center">  
-                    <div class="p-3 rounded-full bg-purple-100 text-purple-500">  
-                        <i class="fas fa-dollar-sign text-xl"></i>  
-                    </div>  
-                    <div class="ml-4">  
-                        <p class="text-sm text-gray-600">Ganancias Hoy</p>  
-                        <p id="earnings" class="text-2xl font-bold">S/. 0</p>  
+  
+            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                <div class="p-5">  
+                    <div class="flex items-center">  
+                        <div class="flex-shrink-0">  
+                            <i class="fas fa-dollar-sign text-green-400 text-2xl"></i>  
+                        </div>  
+                        <div class="ml-5 w-0 flex-1">  
+                            <dl>  
+                                <dt class="text-sm font-medium text-gray-500 truncate">Ganancias del Mes</dt>  
+                                <dd class="text-lg font-medium text-gray-900" id="monthlyEarnings">$0</dd>  
+                            </dl>  
+                        </div>  
                     </div>  
                 </div>  
             </div>  
         </div>  
   
-        <!-- Solicitudes Pendientes -->  
-        <div class="bg-white rounded-lg shadow p-6">  
-            <h2 class="text-xl font-bold mb-4">Solicitudes de Servicio</h2>  
-            <div id="requestsList" class="space-y-4">  
-                <!-- Las solicitudes se cargarán dinámicamente -->  
-                <div class="text-center text-gray-500 py-8">  
-                    <i class="fas fa-inbox text-4xl mb-2"></i>  
-                    <p>No hay solicitudes pendientes</p>  
+        <!-- Acciones Rápidas -->  
+        <div class="bg-white shadow rounded-lg">  
+            <div class="px-4 py-5 sm:p-6">  
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Acciones Rápidas</h3>  
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  
+                    <button id="updateLocationBtn" class="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">  
+                        <i class="fas fa-map-marker-alt mr-2"></i>  
+                        Actualizar Ubicación  
+                    </button>  
+                    <button class="flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">  
+                        <i class="fas fa-history mr-2"></i>  
+                        Ver Historial  
+                    </button>  
                 </div>  
             </div>  
         </div>  
-    </div>  
+    </main>  
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-40">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-sign-out-alt text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-4">Cerrar Sesión</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        ¿Estás seguro de que quieres cerrar sesión? Esto te desconectará automáticamente y no podrás recibir nuevas solicitudes.
+                    </p>
+                </div>
+                <div class="flex justify-center space-x-4 mt-4">
+                    <button id="cancelLogout" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        Cancelar
+                    </button>
+                    <button id="confirmLogout" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <i class="fas fa-spinner fa-spin mr-2 hidden" id="logoutSpinner"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
   
-    <script src="/static/js/config/firebase-config.js"></script>  
-    <script src="/static/js/dashboard/worker-dashboard.js"></script>  
+    <!-- Firebase Scripts -->  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>  
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmSX2DEjIarC3acpn2xoL5Gfe-rW6-JrE",
+            authDomain: "adsv-d87e1.firebaseapp.com",
+            databaseURL: "https://adsv-d87e1-default-rtdb.firebaseio.com",
+            projectId: "adsv-d87e1",
+            storageBucket: "adsv-d87e1.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
+        };
+
+        // Inicializar Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        class WorkerDashboard {
+            constructor() {
+                this.auth = firebase.auth();
+                this.database = firebase.database();
+                this.currentUser = null;
+                this.isConnected = false;
+                
+                this.init();
+            }
+
+            async init() {
+                try {
+                    // Verificar autenticación
+                    await this.checkAuthState();
+                    
+                    // Configurar event listeners
+                    this.setupEventListeners();
+                    
+                    // Ocultar pantalla de carga
+                    this.hideLoadingScreen();
+                    
+                } catch (error) {
+                    console.error('Error al inicializar dashboard:', error);
+                    this.redirectToLogin();
+                }
+            }
+
+            checkAuthState() {
+                return new Promise((resolve, reject) => {
+                    this.auth.onAuthStateChanged(async (user) => {
+                        if (user) {
+                            this.currentUser = user;
+                            
+                            // Verificar que sea un trabajador
+                            const isWorker = await this.verifyWorkerStatus(user.uid);
+                            if (!isWorker) {
+                                console.error('Usuario no es trabajador');
+                                reject(new Error('Acceso no autorizado'));
+                                return;
+                            }
+                            
+                            // Cargar datos del usuario
+                            await this.loadUserData(user.uid);
+                            resolve();
+                            
+                        } else {
+                            reject(new Error('Usuario no autenticado'));
+                        }
+                    });
+                });
+            }
+
+            async verifyWorkerStatus(uid) {
+                try {
+                    const workerRef = this.database.ref(`User/Trabajadores/${uid}`);
+                    const snapshot = await workerRef.once('value');
+                    return snapshot.exists();
+                } catch (error) {
+                    console.error('Error verificando estado de trabajador:', error);
+                    return false;
+                }
+            }
+
+            async loadUserData(uid) {
+                try {
+                    const workerRef = this.database.ref(`User/Trabajadores/${uid}`);
+                    const snapshot = await workerRef.once('value');
+                    
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        this.updateUserInterface(userData);
+                    }
+                } catch (error) {
+                    console.error('Error cargando datos del usuario:', error);
+                }
+            }
+
+            updateUserInterface(userData) {
+                // Actualizar información del usuario
+                const userName = document.getElementById('userName');
+                const userEmail = document.getElementById('userEmail');
+                
+                if (userName) userName.textContent = userData.name || 'Usuario';
+                if (userEmail) userEmail.textContent = userData.email || '';
+                
+                // Actualizar estadísticas
+                document.getElementById('rating').textContent = userData.rating || '5.0';
+                document.getElementById('completedServices').textContent = userData.completedJobs || '0';
+                document.getElementById('monthlyEarnings').textContent = `$${userData.monthlyEarnings || '0'}`;
+                
+                // Actualizar estado de conexión
+                this.isConnected = userData.isAvailable || false;
+                this.updateConnectionStatus();
+            }
+
+            updateConnectionStatus() {
+                const statusToggle = document.getElementById('statusToggle');
+                const statusText = document.getElementById('statusText');
+                const connectBtn = document.getElementById('connectBtn');
+                const disconnectBtn = document.getElementById('disconnectBtn');
+                
+                if (this.isConnected) {
+                    statusToggle.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
+                    statusText.textContent = 'Conectado';
+                    connectBtn.disabled = true;
+                    connectBtn.classList.add('opacity-50');
+                    disconnectBtn.disabled = false;
+                    disconnectBtn.classList.remove('opacity-50');
+                } else {
+                    statusToggle.className = 'px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800';
+                    statusText.textContent = 'Desconectado';
+                    connectBtn.disabled = false;
+                    connectBtn.classList.remove('opacity-50');
+                    disconnectBtn.disabled = true;
+                    disconnectBtn.classList.add('opacity-50');
+                }
+            }
+
+            setupEventListeners() {
+                // Botón de cerrar sesión
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    this.showLogoutModal();
+                });
+
+                // Modal de confirmación de logout
+                document.getElementById('cancelLogout').addEventListener('click', () => {
+                    this.hideLogoutModal();
+                });
+
+                document.getElementById('confirmLogout').addEventListener('click', () => {
+                    this.performLogout();
+                });
+
+                // Botones de conexión
+                document.getElementById('connectBtn').addEventListener('click', () => {
+                    this.toggleConnection(true);
+                });
+
+                document.getElementById('disconnectBtn').addEventListener('click', () => {
+                    this.toggleConnection(false);
+                });
+
+                // Botón de actualizar ubicación
+                document.getElementById('updateLocationBtn').addEventListener('click', () => {
+                    this.updateLocation();
+                });
+
+                // Cerrar modal al hacer clic fuera de él
+                document.getElementById('logoutModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'logoutModal') {
+                        this.hideLogoutModal();
+                    }
+                });
+            }
+
+            showLogoutModal() {
+                document.getElementById('logoutModal').classList.remove('hidden');
+            }
+
+            hideLogoutModal() {
+                document.getElementById('logoutModal').classList.add('hidden');
+            }
+
+            async performLogout() {
+                const confirmBtn = document.getElementById('confirmLogout');
+                const spinner = document.getElementById('logoutSpinner');
+                
+                try {
+                    // Mostrar indicador de carga
+                    confirmBtn.disabled = true;
+                    spinner.classList.remove('hidden');
+                    
+                    // Si está conectado, desconectar primero
+                    if (this.isConnected && this.currentUser) {
+                        await this.updateWorkerStatus(this.currentUser.uid, false);
+                    }
+                    
+                    // Cerrar sesión
+                    await this.auth.signOut();
+                    
+                    // Redirigir a login
+                    this.redirectToLogin();
+                    
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    
+                    // Ocultar indicador de carga
+                    confirmBtn.disabled = false;
+                    spinner.classList.add('hidden');
+                    
+                    // Mostrar error
+                    alert('Error al cerrar sesión. Inténtalo de nuevo.');
+                }
+            }
+
+            async toggleConnection(connect) {
+                if (!this.currentUser) return;
+                
+                try {
+                    await this.updateWorkerStatus(this.currentUser.uid, connect);
+                    this.isConnected = connect;
+                    this.updateConnectionStatus();
+                    
+                    const message = connect ? 'Te has conectado exitosamente' : 'Te has desconectado';
+                    this.showNotification(message, connect ? 'success' : 'info');
+                    
+                } catch (error) {
+                    console.error('Error al cambiar estado de conexión:', error);
+                    this.showNotification('Error al actualizar estado de conexión', 'error');
+                }
+            }
+
+            async updateWorkerStatus(uid, isAvailable) {
+                const updates = {
+                    [`User/Trabajadores/${uid}/isAvailable`]: isAvailable,
+                    [`User/Trabajadores/${uid}/lastSeen`]: new Date().toISOString()
+                };
+
+                if (isAvailable) {
+                    // Agregar a trabajadores activos
+                    const workerRef = this.database.ref(`User/Trabajadores/${uid}`);
+                    const snapshot = await workerRef.once('value');
+                    const workerData = snapshot.val();
+                    
+                    updates[`active_workers/${uid}`] = {
+                        name: workerData.name,
+                        work: workerData.work,
+                        isAvailable: true,
+                        lastSeen: new Date().toISOString()
+                    };
+                } else {
+                    // Remover de trabajadores activos
+                    updates[`active_workers/${uid}`] = null;
+                }
+
+                await this.database.ref().update(updates);
+            }
+
+            updateLocation() {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords;
+                            this.saveLocation(latitude, longitude);
+                        },
+                        (error) => {
+                            console.error('Error obteniendo ubicación:', error);
+                            this.showNotification('Error al obtener ubicación', 'error');
+                        }
+                    );
+                } else {
+                    this.showNotification('Geolocalización no disponible', 'error');
+                }
+            }
+
+            async saveLocation(lat, lng) {
+                if (!this.currentUser) return;
+                
+                try {
+                    await this.database.ref(`User/Trabajadores/${this.currentUser.uid}/location`).set({
+                        latitude: lat,
+                        longitude: lng,
+                        updatedAt: new Date().toISOString()
+                    });
+                    
+                    this.showNotification('Ubicación actualizada exitosamente', 'success');
+                    
+                } catch (error) {
+                    console.error('Error guardando ubicación:', error);
+                    this.showNotification('Error al guardar ubicación', 'error');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                // Crear elemento de notificación
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 transition-all duration-300 ${
+                    type === 'success' ? 'bg-green-500 text-white' :
+                    type === 'error' ? 'bg-red-500 text-white' :
+                    'bg-blue-500 text-white'
+                }`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+
+            hideLoadingScreen() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.remove();
+                    }, 300);
+                }
+            }
+
+            redirectToLogin() {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            new WorkerDashboard();
+        });
+    </script>
 </body>  
 </html>
