@@ -1,0 +1,106 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>ADSv - Mapa de Trabajadores</title>  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">  
+    <style>  
+        #map { height: 100vh; }  
+        .search-container {  
+            position: absolute;  
+            top: 20px;  
+            left: 20px;  
+            right: 20px;  
+            z-index: 1000;  
+        }  
+        .legend-container {  
+            position: absolute;  
+            bottom: 20px;  
+            left: 20px;  
+            z-index: 1000;  
+        }  
+    </style>  
+</head>  
+<body>  
+    <!-- Barra de búsqueda y filtros -->  
+    <div class="search-container">  
+        <div class="bg-white rounded-lg shadow-lg p-4">  
+            <div class="flex flex-col space-y-4">  
+                <!-- Búsqueda de ubicación -->  
+                <div class="flex items-center space-x-2">  
+                    <i class="fas fa-search text-gray-400"></i>  
+                    <input id="locationSearch" type="text" placeholder="Buscar ubicación..."   
+                           class="flex-1 border-none outline-none">  
+                </div>  
+                  
+                <hr class="border-gray-200">  
+                  
+                <!-- Filtro de servicios -->  
+                <div class="flex items-center space-x-2">  
+                    <i class="fas fa-filter text-blue-500"></i>  
+                    <select id="serviceFilter" class="flex-1 border-none outline-none bg-transparent">  
+                        <option value="all">Todos los servicios</option>  
+                        <option value="Carpintería">Carpintería</option>  
+                        <option value="Electricista">Electricista</option>  
+                        <option value="Plomería">Plomería</option>  
+                        <option value="Pintor">Pintor</option>  
+                        <option value="Jardinería">Jardinería</option>  
+                        <option value="Albañilería">Albañilería</option>  
+                        <option value="Ferretería">Ferretería</option>  
+                    </select>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <!-- Leyenda -->  
+    <div class="legend-container">  
+        <button id="legendToggle" class="bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600">  
+            <i class="fas fa-info"></i>  
+        </button>  
+        <div id="legendCard" class="bg-white rounded-lg shadow-lg p-4 mt-2 hidden">  
+            <h3 class="font-bold mb-2">Leyenda</h3>  
+            <div class="space-y-2 text-sm">  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-blue-500 rounded"></div>  
+                    <span>Carpintería</span>  
+                </div>  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-yellow-500 rounded"></div>  
+                    <span>Electricista</span>  
+                </div>  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-green-500 rounded"></div>  
+                    <span>Plomería</span>  
+                </div>  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-purple-500 rounded"></div>  
+                    <span>Pintor</span>  
+                </div>  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-red-500 rounded"></div>  
+                    <span>Jardinería</span>  
+                </div>  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-gray-500 rounded"></div>  
+                    <span>Albañilería</span>  
+                </div>  
+                <div class="flex items-center space-x-2">  
+                    <div class="w-4 h-4 bg-orange-500 rounded"></div>  
+                    <span>Ferretería</span>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <!-- Mapa -->  
+    <div id="map"></div>  
+  
+    <!-- Scripts -->  
+    <script src="/static/js/config/firebase-config.js"></script>  
+    <script src="/static/js/map/map-client.js"></script>  
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap"></script>  
+</body>  
+</html>

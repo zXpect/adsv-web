@@ -1,0 +1,129 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>ADSv - Dashboard Trabajador</title>  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">  
+</head>  
+<body class="bg-gray-50">  
+    <!-- Navbar -->  
+    <nav class="bg-white shadow-lg">  
+        <div class="max-w-7xl mx-auto px-4">  
+            <div class="flex justify-between h-16">  
+                <div class="flex items-center">  
+                    <img src="/static/images/logo.png" alt="ADSv" class="h-8 w-auto">  
+                    <span class="ml-2 text-xl font-semibold">ADSv Trabajador</span>  
+                </div>  
+                <div class="flex items-center space-x-4">  
+                    <div class="flex items-center space-x-2">  
+                        <span class="text-sm text-gray-600">Estado:</span>  
+                        <button id="statusToggle" class="px-3 py-1 rounded-full text-sm font-medium">  
+                            <span id="statusText">Desconectado</span>  
+                        </button>  
+                    </div>  
+                    <span id="userEmail" class="text-gray-700"></span>  
+                    <button id="logoutBtn" class="text-red-600 hover:text-red-800">  
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión  
+                    </button>  
+                </div>  
+            </div>  
+        </div>  
+    </nav>  
+  
+    <!-- Main Content -->  
+    <div class="max-w-7xl mx-auto py-6 px-4">  
+        <!-- Estado y Controles -->  
+        <div class="bg-white rounded-lg shadow p-6 mb-6">  
+            <h2 class="text-xl font-bold mb-4">Control de Disponibilidad</h2>  
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">  
+                <div class="text-center">  
+                    <button id="connectBtn" class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">  
+                        <i class="fas fa-power-off mr-2"></i>  
+                        Conectarse  
+                    </button>  
+                </div>  
+                <div class="text-center">  
+                    <button id="disconnectBtn" class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50" disabled>  
+                        <i class="fas fa-stop mr-2"></i>  
+                        Desconectarse  
+                    </button>  
+                </div>  
+                <div class="text-center">  
+                    <button id="updateLocationBtn" class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors">  
+                        <i class="fas fa-map-marker-alt mr-2"></i>  
+                        Actualizar Ubicación  
+                    </button>  
+                </div>  
+            </div>  
+        </div>  
+  
+        <!-- Estadísticas -->  
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">  
+            <div class="bg-white rounded-lg shadow p-6">  
+                <div class="flex items-center">  
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-500">  
+                        <i class="fas fa-clock text-xl"></i>  
+                    </div>  
+                    <div class="ml-4">  
+                        <p class="text-sm text-gray-600">Tiempo Conectado</p>  
+                        <p id="connectedTime" class="text-2xl font-bold">0h 0m</p>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <div class="bg-white rounded-lg shadow p-6">  
+                <div class="flex items-center">  
+                    <div class="p-3 rounded-full bg-green-100 text-green-500">  
+                        <i class="fas fa-handshake text-xl"></i>  
+                    </div>  
+                    <div class="ml-4">  
+                        <p class="text-sm text-gray-600">Servicios Hoy</p>  
+                        <p id="servicesCount" class="text-2xl font-bold">0</p>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <div class="bg-white rounded-lg shadow p-6">  
+                <div class="flex items-center">  
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">  
+                        <i class="fas fa-star text-xl"></i>  
+                    </div>  
+                    <div class="ml-4">  
+                        <p class="text-sm text-gray-600">Calificación</p>  
+                        <p id="rating" class="text-2xl font-bold">5.0</p>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <div class="bg-white rounded-lg shadow p-6">  
+                <div class="flex items-center">  
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-500">  
+                        <i class="fas fa-dollar-sign text-xl"></i>  
+                    </div>  
+                    <div class="ml-4">  
+                        <p class="text-sm text-gray-600">Ganancias Hoy</p>  
+                        <p id="earnings" class="text-2xl font-bold">S/. 0</p>  
+                    </div>  
+                </div>  
+            </div>  
+        </div>  
+  
+        <!-- Solicitudes Pendientes -->  
+        <div class="bg-white rounded-lg shadow p-6">  
+            <h2 class="text-xl font-bold mb-4">Solicitudes de Servicio</h2>  
+            <div id="requestsList" class="space-y-4">  
+                <!-- Las solicitudes se cargarán dinámicamente -->  
+                <div class="text-center text-gray-500 py-8">  
+                    <i class="fas fa-inbox text-4xl mb-2"></i>  
+                    <p>No hay solicitudes pendientes</p>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <script src="/static/js/config/firebase-config.js"></script>  
+    <script src="/static/js/dashboard/worker-dashboard.js"></script>  
+</body>  
+</html>
