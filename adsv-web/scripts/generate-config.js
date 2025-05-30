@@ -23,13 +23,19 @@ if (missingVars.length > 0) {
     process.exit(1);
 }
 
-// Generar el contenido del archivo
+// Generar manualmente la cadena JS con claves sin comillas
+const firebaseConfigString = Object.entries(firebaseConfig)
+    .map(([key, value]) => `    ${key}: "${value}"`)
+    .join(',\n');
+
 const configContent = `// firebase-config.js
 // ⚠️ ARCHIVO GENERADO AUTOMÁTICAMENTE - NO EDITAR MANUALMENTE
 // Este archivo se genera durante el build con las variables de entorno
 
 // Configuración de Firebase
-const firebaseConfig = ${JSON.stringify(firebaseConfig, null, 4)};
+const firebaseConfig = {
+${firebaseConfigString}
+};
 
 console.log('✅ Configuración Firebase cargada para proyecto:', firebaseConfig.projectId);
 
@@ -56,14 +62,14 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 `;
 
-// Crear directorio si no existe
-const configDir = path.join(__dirname, '..', 'static', 'js', 'config');
+// Ruta final: adsv-web/public/static/js/config/firebase-config.js
+const configDir = path.join(__dirname, '..', 'public', 'static', 'js', 'config');
+const configPath = path.join(configDir, 'firebase-config.js');
+
 if (!fs.existsSync(configDir)) {
     fs.mkdirSync(configDir, { recursive: true });
 }
 
-// Escribir el archivo
-const configPath = path.join(configDir, 'firebase-config.js');
 fs.writeFileSync(configPath, configContent);
 
 console.log('✅ firebase-config.js generado exitosamente en:', configPath);
