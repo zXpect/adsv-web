@@ -1,8 +1,4 @@
-exports.handler = async function(event, context) {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      apiKey: process.env.FIREBASE_API_KEY || "No se encontró"
-    })
-  };
-};
+// test-env.js
+require('dotenv').config();
+
+console.log("API Key:", process.env.GOOGLE_MAPS_API_KEY);
