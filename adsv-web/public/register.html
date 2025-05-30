@@ -3,145 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADSv - Registro</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <title>ADS - Registro</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #FF7500;
+            --color-primaryDark: #C15A02;
+            --color-primaryLight: #FD8B29;
+            --color-accent: #FA9B4B;
+            --color-background: #F5F5F5;
+            --color-text-primary: #212121;
+            --color-text-secondary: #757575;
+            --color-text-hint: #BDBDBD;
+            --color-star: #FFC107;
+            --color-white: #FFFFFF;
+            --color-black: #000000;
+            --card-bg: #FFFFFF;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme {
+            --color-background: #121212;
+            --color-text-primary: #E0E0E0;
+            --color-text-secondary: #B0B0B0;
+            --color-text-hint: #707070;
+            --card-bg: #1E1E1E;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--color-background) 0%, rgba(255, 117, 0, 0.05) 100%);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 117, 0, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(255, 117, 0, 0.2);
+        }
+
+        .theme-toggle i {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .container {
+            max-width: 28rem;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primaryLight) 100%);
+            padding: 2rem;
+            text-align: center;
+            color: var(--color-white);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .user-type-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-type-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 117, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .user-type-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 117, 0, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 117, 0, 0.15);
+        }
+
+        .user-type-card:hover::before {
+            opacity: 1;
+        }
+
+        .user-type-card.selected {
+            border-color: var(--color-primary);
+            background: linear-gradient(135deg, rgba(255, 117, 0, 0.1) 0%, rgba(255, 117, 0, 0.05) 100%);
+        }
+
+        .user-type-card.selected::before {
+            opacity: 1;
+        }
+
+        .user-type-icon {
+            font-size: 2rem;
+            color: var(--color-text-hint);
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .user-type-card.selected .user-type-icon {
+            color: var(--color-primary);
+        }
+
+        .user-type-title {
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-type-subtitle {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid rgba(255, 117, 0, 0.2);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--color-text-primary);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-hint);
+        }
+
+        .form-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(255, 117, 0, 0.1);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23FF7500' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .worker-fields {
+            background: linear-gradient(135deg, rgba(255, 117, 0, 0.05) 0%, transparent 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 117, 0, 0.1);
+            margin-top: 1rem;
+        }
+
+        .error-container {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-text {
+            color: #dc2626;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            color: var(--color-primary);
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .loading-indicator.success {
+            color: #10b981;
+        }
+
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primaryLight) 100%);
+            color: var(--color-white);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-button:hover::before {
+            left: 100%;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 117, 0, 0.3);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-icon {
+            margin-right: 0.5rem;
+        }
+
+        .links-container {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 117, 0, 0.1);
+        }
+
+        .link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .link:hover {
+            color: var(--color-primaryDark);
+        }
+
+        .link-text {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .container {
+                margin: 0.5rem;
+                border-radius: 16px;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .user-type-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation for form transitions */
+        .worker-fields {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full space-y-8">
-        <div>
-            <div class="mx-auto h-12 w-auto flex justify-center">
-                <h2 class="text-3xl font-bold text-gray-900">ADSv</h2>
-            </div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Crear Cuenta
-            </h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                Únete a nuestra plataforma de servicios
-            </p>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">ADS</div>
+            <h2 class="title">Crear Cuenta</h2>
+            <p class="subtitle">Únete a nuestra plataforma de servicios</p>
         </div>
         
-        <form id="registerForm" class="mt-8 space-y-6">
-            <!-- Tipo de Usuario -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Usuario</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="userType" value="client" class="sr-only" checked>
-                        <div class="user-type-card border-2 border-gray-300 bg-white rounded-lg p-4 text-center transition-all duration-200">
-                            <i class="fas fa-user text-2xl text-gray-500 mb-2"></i>
-                            <p class="font-medium text-gray-700">Cliente</p>
-                            <p class="text-xs text-gray-600">Solicitar servicios</p>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="userType" value="worker" class="sr-only">
-                        <div class="user-type-card border-2 border-gray-300 bg-white rounded-lg p-4 text-center transition-all duration-200">
-                            <i class="fas fa-tools text-2xl text-gray-500 mb-2"></i>
-                            <p class="font-medium text-gray-700">Trabajador</p>
-                            <p class="text-xs text-gray-600">Ofrecer servicios</p>
-                        </div>
-                    </label>
+        <div class="form-container">
+            <form id="registerForm">
+                <!-- Tipo de Usuario -->
+                <div class="form-group">
+                    <label class="form-label">Tipo de Usuario</label>
+                    <div class="user-type-selection">
+                        <label class="user-type-card selected" data-type="client">
+                            <input type="radio" name="userType" value="client" class="hidden" checked>
+                            <i class="fas fa-user user-type-icon"></i>
+                            <p class="user-type-title">Cliente</p>
+                            <p class="user-type-subtitle">Solicitar servicios</p>
+                        </label>
+                        <label class="user-type-card" data-type="worker">
+                            <input type="radio" name="userType" value="worker" class="hidden">
+                            <i class="fas fa-tools user-type-icon"></i>
+                            <p class="user-type-title">Trabajador</p>
+                            <p class="user-type-subtitle">Ofrecer servicios</p>
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Información Personal -->
-            <div class="space-y-4">
-                <div>
-                    <label for="fullName" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
+                <!-- Información Personal -->
+                <div class="form-group">
+                    <label for="fullName" class="form-label">Nombre Completo</label>
                     <input id="fullName" name="fullName" type="text" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           class="form-input" 
                            placeholder="Tu nombre completo">
                 </div>
 
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                <div class="form-group">
+                    <label for="email" class="form-label">Correo Electrónico</label>
                     <input id="email" name="email" type="email" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           class="form-input" 
                            placeholder="tu@email.com">
                 </div>
 
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                <div class="form-group">
+                    <label for="phone" class="form-label">Teléfono</label>
                     <input id="phone" name="phone" type="tel" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           class="form-input" 
                            placeholder="999 999 999">
                 </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
                     <input id="password" name="password" type="password" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           class="form-input" 
                            placeholder="Mínimo 6 caracteres">
                 </div>
 
-                <div>
-                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
                     <input id="confirmPassword" name="confirmPassword" type="password" required 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                           class="form-input" 
                            placeholder="Repite tu contraseña">
                 </div>
-            </div>
 
-            <!-- Campos específicos para trabajadores -->
-            <div id="workerFields" class="space-y-4 hidden">
-                <div>
-                    <label for="serviceType" class="block text-sm font-medium text-gray-700">Tipo de Servicio</label>
-                    <select id="serviceType" name="serviceType" 
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        <option value="">Selecciona tu especialidad</option>
-                        <option value="Carpintería">Carpintería</option>
-                        <option value="Electricista">Electricista</option>
-                        <option value="Plomería">Plomería</option>
-                        <option value="Pintor">Pintor</option>
-                        <option value="Jardinería">Jardinería</option>
-                        <option value="Albañilería">Albañilería</option>
-                        <option value="Ferretería">Ferretería</option>
-                    </select>
+                <!-- Campos específicos para trabajadores -->
+                <div id="workerFields" class="worker-fields hidden">
+                    <div class="form-group">
+                        <label for="serviceType" class="form-label">Tipo de Servicio</label>
+                        <select id="serviceType" name="serviceType" class="form-input form-select">
+                            <option value="">Selecciona tu especialidad</option>
+                            <option value="Carpintería">Carpintería</option>
+                            <option value="Electricista">Electricista</option>
+                            <option value="Plomería">Plomería</option>
+                            <option value="Pintor">Pintor</option>
+                            <option value="Jardinería">Jardinería</option>
+                            <option value="Albañilería">Albañilería</option>
+                            <option value="Ferretería">Ferretería</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experience" class="form-label">Años de Experiencia</label>
+                        <input id="experience" name="experience" type="number" min="0" max="50" 
+                               class="form-input" 
+                               placeholder="0">
+                    </div>
                 </div>
 
-                <div>
-                    <label for="experience" class="block text-sm font-medium text-gray-700">Años de Experiencia</label>
-                    <input id="experience" name="experience" type="number" min="0" max="50" 
-                           class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
-                           placeholder="0">
+                <!-- Error Messages -->
+                <div id="errorMessages" class="error-container hidden">
+                    <div id="generalError" class="error-text"></div>
                 </div>
-            </div>
 
-            <!-- Error Messages -->
-            <div id="errorMessages" class="space-y-2 hidden">
-                <div id="generalError" class="text-red-600 text-sm"></div>
-            </div>
+                <!-- Loading indicator -->
+                <div id="loadingIndicator" class="loading-indicator hidden">
+                    <i class="fas fa-spinner fa-spin"></i> Creando cuenta...
+                </div>
 
-            <!-- Loading indicator -->
-            <div id="loadingIndicator" class="text-blue-600 text-sm text-center hidden">
-                <i class="fas fa-spinner fa-spin"></i> Creando cuenta...
-            </div>
-
-            <div>
-                <button type="submit" id="registerButton"
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <i class="fas fa-user-plus text-blue-500 group-hover:text-blue-400"></i>
-                    </span>
+                <button type="submit" id="registerButton" class="submit-button">
+                    <i class="fas fa-user-plus button-icon"></i>
                     Crear Cuenta
                 </button>
-            </div>
 
-            <div class="text-center">
-                <p class="text-sm text-gray-600">
-                    ¿Ya tienes cuenta? 
-                    <a href="login.html" class="font-medium text-blue-600 hover:text-blue-500">
-                        Inicia sesión aquí
-                    </a>
-                </p>
-                <p class="mt-2 text-sm text-gray-600">
-                    <a href="index.html" class="font-medium text-blue-600 hover:text-blue-500">
-                        Volver al inicio
-                    </a>
-                </p>
-            </div>
-        </form>
+                <div class="links-container">
+                    <p class="link-text">
+                        ¿Ya tienes cuenta? 
+                        <a href="login.html" class="link">Inicia sesión aquí</a>
+                    </p>
+                    <p class="link-text" style="margin-top: 0.5rem;">
+                        <a href="index.html" class="link">Volver al inicio</a>
+                    </p>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Firebase Scripts -->
@@ -149,52 +513,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
 
-    <style>
-        /* Estilo por defecto para todas las tarjetas */
-        .user-type-card {
-            transition: all 0.2s ease;
-            border-color: #D1D5DB; /* gray-300 */
-            background-color: #FFFFFF; /* white */
-        }
-        
-        .user-type-card i {
-            color: #6B7280; /* gray-500 */
-        }
-        
-        .user-type-card p {
-            color: #374151; /* gray-700 para el título */
-        }
-        
-        .user-type-card p.text-xs {
-            color: #6B7280; /* gray-600 para el subtítulo */
-        }
-        
-        /* Estilo para tarjeta seleccionada */
-        input[name="userType"]:checked + .user-type-card {
-            border-color: #3B82F6 !important; /* blue-500 */
-            background-color: #EFF6FF !important; /* blue-50 */
-        }
-        
-        input[name="userType"]:checked + .user-type-card i {
-            color: #3B82F6 !important; /* blue-500 */
-        }
-        
-        input[name="userType"]:checked + .user-type-card p {
-            color: #1E40AF !important; /* blue-700 */
-        }
-        
-        input[name="userType"]:checked + .user-type-card p.text-xs {
-            color: #2563EB !important; /* blue-600 */
-        }
-        
-        /* Hover effect */
-        .user-type-card:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-
     <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            body.classList.toggle('dark-theme');
+            
+            if (body.classList.contains('dark-theme')) {
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+
+        // User type selection
+        function setupUserTypeSelection() {
+            const userTypeCards = document.querySelectorAll('.user-type-card');
+            
+            userTypeCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Remove selected class from all cards
+                    userTypeCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    card.classList.add('selected');
+                    
+                    // Update radio button
+                    const radio = card.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    // Show/hide worker fields
+                    const workerFields = document.getElementById('workerFields');
+                    if (radio.value === 'worker') {
+                        workerFields.classList.remove('hidden');
+                    } else {
+                        workerFields.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
         // Configuración de Firebase usando las variables de entorno
         const firebaseConfig = {
             apiKey: "AIzaSyBmSX2DEjIarC3acpn2xoL5Gfe-rW6-JrE",
@@ -217,12 +590,6 @@
                 this.database = firebase.database();
                 this.setupEventListeners();
                 this.checkAuthState();
-                this.initializeUserTypeSelection();
-            }
-
-            initializeUserTypeSelection() {
-                // Inicializar el estado visual correcto
-                this.updateUserTypeVisuals();
             }
 
             setupEventListeners() {
@@ -230,47 +597,6 @@
                 document.getElementById('registerForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.validateAndRegister();
-                });
-
-                // Mostrar/ocultar campos específicos para trabajadores
-                document.querySelectorAll('input[name="userType"]').forEach(radio => {
-                    radio.addEventListener('change', (e) => {
-                        this.updateUserTypeVisuals();
-                        const workerFields = document.getElementById('workerFields');
-                        if (e.target.value === 'worker') {
-                            workerFields.classList.remove('hidden');
-                        } else {
-                            workerFields.classList.add('hidden');
-                        }
-                    });
-                });
-            }
-
-            updateUserTypeVisuals() {
-                // Obtener todos los radio buttons y sus tarjetas
-                const radios = document.querySelectorAll('input[name="userType"]');
-                
-                radios.forEach(radio => {
-                    const card = radio.nextElementSibling;
-                    const icon = card.querySelector('i');
-                    const title = card.querySelector('p:first-of-type');
-                    const subtitle = card.querySelector('p:last-of-type');
-                    
-                    if (radio.checked) {
-                        // Aplicar estilos de seleccionado
-                        card.style.borderColor = '#3B82F6';
-                        card.style.backgroundColor = '#EFF6FF';
-                        icon.style.color = '#3B82F6';
-                        title.style.color = '#1E40AF';
-                        subtitle.style.color = '#2563EB';
-                    } else {
-                        // Aplicar estilos por defecto
-                        card.style.borderColor = '#D1D5DB';
-                        card.style.backgroundColor = '#FFFFFF';
-                        icon.style.color = '#6B7280';
-                        title.style.color = '#374151';
-                        subtitle.style.color = '#6B7280';
-                    }
                 });
             }
 
@@ -538,7 +864,7 @@
                 // Mostrar mensaje de éxito
                 const loadingIndicator = document.getElementById('loadingIndicator');
                 loadingIndicator.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-                loadingIndicator.className = 'text-green-600 text-sm text-center';
+                loadingIndicator.className = 'loading-indicator success';
             }
 
             clearErrors() {
@@ -555,6 +881,13 @@
         // Inicializar cuando se carga la página
         document.addEventListener('DOMContentLoaded', () => {
             try {
+                // Load theme
+                loadTheme();
+                
+                // Setup user type selection
+                setupUserTypeSelection();
+                
+                // Initialize RegisterManager
                 new RegisterManager();
                 console.log('RegisterManager inicializado correctamente');
             } catch (error) {
