@@ -2,3 +2,4 @@
 .netlify
 .env
 /public/static/js/config/firebase-config.js
+/adsv-web/functions/netlify/serviceAccountKey.json
