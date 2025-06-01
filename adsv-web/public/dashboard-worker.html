@@ -6,34 +6,38 @@
     <title>ADSv - Dashboard Trabajador</title>  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">  
+    <link rel="stylesheet" href="static/css/dashboard.css">
 </head>  
-<body class="bg-gray-50 min-h-screen">  
+<body class="min-h-screen">  
     <!-- Loading Screen -->
     <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
         <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-            <p class="text-gray-600">Cargando dashboard...</p>
+            <i class="fas fa-spinner fa-spin text-4xl icon-primary mb-4"></i>
+            <p class="text-secondary">Cargando dashboard...</p>
         </div>
     </div>
 
     <!-- Header -->  
-    <header class="bg-white shadow">  
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">  
-            <div class="flex justify-between items-center py-6">  
+    <header class="bg-white shadow-md">  
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">  
+            <div class="flex justify-between items-center py-5">  
                 <div class="flex items-center">  
-                    <h1 class="text-2xl font-bold text-gray-900">Dashboard Trabajador</h1>  
+                    <h1 class="text-2xl font-bold header-title">Dashboard Trabajador</h1>  
                 </div>  
                 <div class="flex items-center space-x-4">  
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white text-sm"></i>
+                    <button id="themeToggle" class="theme-toggle">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center avatar-ring">
+                            <i class="fas fa-user text-white text-lg"></i>
                         </div>
-                        <div>
-                            <span id="userName" class="text-gray-900 font-medium">Cargando...</span>
-                            <div id="userEmail" class="text-sm text-gray-500">Cargando...</div>
+                        <div class="user-info">
+                            <span id="userName" class="font-semibold">Cargando...</span>
+                            <div id="userEmail" class="text-sm">Cargando...</div>
                         </div>
                     </div>
-                    <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">  
+                    <button id="logoutBtn" class="btn btn-danger">  
                         <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión  
                     </button>  
                 </div>  
@@ -42,23 +46,32 @@
     </header>  
   
     <!-- Main Content -->  
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">  
+    <main class="container mx-auto py-8 sm:px-6 lg:px-8">  
+        <!-- Grid Container for Two-Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content Column -->
+            <div class="lg:col-span-2">
         <!-- Estado de Conexión -->  
-        <div class="bg-white overflow-hidden shadow rounded-lg mb-6">  
-            <div class="px-4 py-5 sm:p-6">  
+                <div class="card mb-8">  
+                    <div class="p-6">  
                 <div class="flex items-center justify-between">  
-                    <div>  
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Estado de Conexión</h3>  
-                        <p class="mt-1 text-sm text-gray-500">Gestiona tu disponibilidad para recibir solicitudes</p>  
+                            <div class="flex items-center">  
+                                <div class="flex-shrink-0 p-3 bg-blue-100 rounded-lg">  
+                                    <i class="fas fa-wifi icon-blue text-2xl"></i>  
+                                </div>  
+                                <div class="ml-5">  
+                                    <h3 class="text-lg font-semibold text-primary">Estado de Conexión</h3>  
+                                    <p class="text-sm text-secondary">Gestiona tu disponibilidad para recibir solicitudes</p>  
+                                </div>  
                     </div>  
                     <div class="flex items-center space-x-4">  
-                        <span id="statusToggle" class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">  
+                                <span id="statusToggle" class="status-badge">  
                             <span id="statusText">Desconectado</span>  
                         </span>  
-                        <button id="connectBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">  
+                                <button id="connectBtn" class="btn btn-success">  
                             Conectar  
                         </button>  
-                        <button id="disconnectBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 opacity-50 transition-colors duration-200" disabled>  
+                                <button id="disconnectBtn" class="btn btn-danger opacity-50" disabled>  
                             Desconectar  
                         </button>  
                     </div>  
@@ -67,49 +80,49 @@
         </div>  
   
         <!-- Estadísticas -->  
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">  
-            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">  
+                    <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-star text-yellow-400 text-2xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-yellow-100 rounded-lg">  
+                                    <i class="fas fa-star icon-yellow text-2xl"></i>  
                         </div>  
-                        <div class="ml-5 w-0 flex-1">  
+                                <div class="ml-4 w-0 flex-1">  
                             <dl>  
-                                <dt class="text-sm font-medium text-gray-500 truncate">Calificación</dt>  
-                                <dd class="text-lg font-medium text-gray-900" id="rating">5.0</dd>  
+                                        <dt class="text-sm font-medium text-secondary truncate">Calificación</dt>  
+                                        <dd class="text-xl font-semibold text-primary" id="rating">5.0</dd>  
                             </dl>  
                         </div>  
                     </div>  
                 </div>  
             </div>  
   
-            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                    <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-briefcase text-blue-400 text-2xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-green-100 rounded-lg">  
+                                    <i class="fas fa-briefcase icon-green text-2xl"></i>  
                         </div>  
-                        <div class="ml-5 w-0 flex-1">  
+                                <div class="ml-4 w-0 flex-1">  
                             <dl>  
-                                <dt class="text-sm font-medium text-gray-500 truncate">Servicios Completados</dt>  
-                                <dd class="text-lg font-medium text-gray-900" id="completedServices">0</dd>  
+                                        <dt class="text-sm font-medium text-secondary truncate">Servicios Completados</dt>  
+                                        <dd class="text-xl font-semibold text-primary" id="completedServices">0</dd>  
                             </dl>  
                         </div>  
                     </div>  
                 </div>  
             </div>  
   
-            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                    <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-dollar-sign text-green-400 text-2xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-primary-100 rounded-lg">  
+                                    <i class="fas fa-dollar-sign icon-primary text-2xl"></i>  
                         </div>  
-                        <div class="ml-5 w-0 flex-1">  
+                                <div class="ml-4 w-0 flex-1">  
                             <dl>  
-                                <dt class="text-sm font-medium text-gray-500 truncate">Ganancias del Mes</dt>  
-                                <dd class="text-lg font-medium text-gray-900" id="monthlyEarnings">$0</dd>  
+                                        <dt class="text-sm font-medium text-secondary truncate">Ganancias del Mes</dt>  
+                                        <dd class="text-xl font-semibold text-primary" id="monthlyEarnings">$0</dd>  
                             </dl>  
                         </div>  
                     </div>  
@@ -117,42 +130,129 @@
             </div>  
         </div>  
   
-        <!-- Acciones Rápidas -->  
-        <div class="bg-white shadow rounded-lg">  
-            <div class="px-4 py-5 sm:p-6">  
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Acciones Rápidas</h3>  
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  
-                    <button id="updateLocationBtn" class="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">  
-                        <i class="fas fa-map-marker-alt mr-2"></i>  
-                        Actualizar Ubicación  
+                <!-- Mapa de Trabajo -->
+                <div class="card mb-8">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                                    <i class="fas fa-map-marked-alt icon-blue text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-primary">Mi Zona de Trabajo</h3>
+                                    <p class="text-sm text-secondary">Visualiza y actualiza tu ubicación de trabajo</p>
+                                </div>
+                            </div>
+                            <button id="updateLocationBtn" class="btn btn-primary">
+                                <i class="fas fa-location-arrow mr-2"></i>Actualizar Ubicación
+                            </button>
+                        </div>
+                        <div id="workerMap" class="h-96 rounded-lg bg-gray-100">
+                            <!-- El mapa se cargará aquí -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial de Servicios -->
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-green-100 rounded-lg mr-4">
+                                    <i class="fas fa-history icon-green text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-primary">Historial de Servicios</h3>
+                                    <p class="text-sm text-secondary">Registro de tus servicios completados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="servicesHistory" class="space-y-4">
+                            <!-- El historial se cargará dinámicamente aquí -->
+                            <div class="text-center text-secondary py-4">
+                                <i class="fas fa-clipboard-list text-4xl mb-2 text-blue-200"></i>
+                                <p>No hay servicios registrados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Service Management -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24">
+                    <div class="card">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                                        <i class="fas fa-tools icon-blue text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-primary">Gestión de Servicios</h3>
+                                </div>
+                            </div>
+
+                            <!-- Service Management Content -->
+                            <div class="space-y-6">
+                                <!-- Active Services Section -->
+                                <div>
+                                    <h4 class="font-medium text-primary mb-3">Servicios Activos</h4>
+                                    <div id="activeServicesList" class="space-y-3">
+                                        <!-- Placeholder for active services -->
+                                        <div class="text-center text-secondary py-4">
+                                            <i class="fas fa-briefcase text-4xl mb-2 text-blue-200"></i>
+                                            <p>No hay servicios activos</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pending Requests Section -->
+                                <div>
+                                    <h4 class="font-medium text-primary mb-3">Solicitudes Pendientes</h4>
+                                    <div id="pendingRequestsList" class="space-y-3">
+                                        <!-- Placeholder for pending requests -->
+                                        <div class="text-center text-secondary py-4">
+                                            <i class="fas fa-clock text-4xl mb-2 text-blue-200"></i>
+                                            <p>No hay solicitudes pendientes</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button id="viewProfileBtn" class="btn btn-primary w-full mb-3">
+                                        <i class="fas fa-user-edit mr-2"></i>Editar Perfil
                     </button>  
-                    <button class="flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">  
-                        <i class="fas fa-history mr-2"></i>  
-                        Ver Historial  
+                                    <button id="viewAnalyticsBtn" class="btn btn-secondary w-full">
+                                        <i class="fas fa-chart-line mr-2"></i>Ver Análisis
                     </button>  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>  
             </div>  
         </div>  
     </main>  
 
     <!-- Logout Confirmation Modal -->
-    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-40">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <i class="fas fa-sign-out-alt text-red-600 text-xl"></i>
+    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-40 flex items-center justify-center">
+        <div class="modal-content p-6 border w-full max-w-sm mx-auto">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-sign-out-alt icon-red text-xl"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-4">Cerrar Sesión</h3>
+                <h3 class="text-lg font-semibold text-primary mt-2">Cerrar Sesión</h3>
                 <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-500">
-                        ¿Estás seguro de que quieres cerrar sesión? Esto te desconectará automáticamente y no podrás recibir nuevas solicitudes.
+                    <p class="text-sm text-secondary">
+                        ¿Estás seguro de que quieres cerrar sesión? Esto te desconectará automáticamente.
                     </p>
                 </div>
                 <div class="flex justify-center space-x-4 mt-4">
-                    <button id="cancelLogout" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button id="cancelLogout" class="btn btn-secondary">
                         Cancelar
                     </button>
-                    <button id="confirmLogout" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <button id="confirmLogout" class="btn btn-danger">
                         <i class="fas fa-spinner fa-spin mr-2 hidden" id="logoutSpinner"></i>
                         Cerrar Sesión
                     </button>
@@ -160,13 +260,98 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-40 flex items-center justify-center">
+        <div class="modal-content p-6 border w-full max-w-md mx-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-primary">Editar Perfil</h3>
+                <button id="closeProfileModal" class="text-secondary hover:text-primary">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="profileForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-secondary mb-1">Nombre</label>
+                    <input type="text" id="profileName" class="w-full" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-secondary mb-1">Profesión</label>
+                    <select id="profileWork" class="w-full" required>
+                        <option value="Carpintería">🔨 Carpintería</option>
+                        <option value="Electricista">⚡ Electricista</option>
+                        <option value="Plomería">🔧 Plomería</option>
+                        <option value="Pintor">🎨 Pintor</option>
+                        <option value="Jardinería">🌱 Jardinería</option>
+                        <option value="Albañilería">🧱 Albañilería</option>
+                        <option value="Ferretería">🛠️ Ferretería</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-secondary mb-1">Descripción</label>
+                    <textarea id="profileDescription" rows="3" class="w-full" placeholder="Describe tu experiencia y habilidades..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-secondary mb-1">Teléfono</label>
+                    <input type="tel" id="profilePhone" class="w-full">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-spinner fa-spin mr-2 hidden" id="profileSpinner"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
   
     <!-- Firebase Scripts -->  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>  
+    <!-- Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6j7YaKesOKWEgaGTsNruStFRKH0pxeQY&libraries=geometry"></script>
 
     <script src="static\js\config\firebase-config.js"></script>
     <script src="static\js\dashboard\worker-dashboard.js"></script>
+
+    <style>
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.connected {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+        }
+
+        .status-badge.disconnected {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+
+        .btn-success {
+            background-color: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            border-color: #059669;
+        }
+
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
 </body>  
 </html>

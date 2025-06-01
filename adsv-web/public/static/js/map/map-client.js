@@ -1,4 +1,3 @@
-
         // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -67,102 +66,104 @@
             }
 
             async loadWorkersFromFirebase() {
-    try {
-        this.updateDebugStatus('workersStatus', 'Trabajadores: Obteniendo lista activa...', 'warning');
-        
-        // Obtener la lista de trabajadores activos - CAMBIO AQUÍ
-        const activeWorkersSnapshot = await database.ref('active_workers').once('value');
-        const activeWorkersData = activeWorkersSnapshot.val();
-        
-        console.log('Datos de active_workers:', activeWorkersData);
-        
-        if (!activeWorkersData || Object.keys(activeWorkersData).length === 0) {
-            console.log('No hay trabajadores activos registrados');
-            this.updateDebugStatus('workersStatus', 'Trabajadores: Sin activos', 'warning');
-            this.loadDemoWorkers();
-            return;
-        }
-
-        // Extraer los IDs de trabajadores activos - CAMBIO PRINCIPAL AQUÍ
-        const activeWorkerIds = Object.keys(activeWorkersData);
-        console.log('IDs de trabajadores activos:', activeWorkerIds);
-
-        // Obtener datos completos de cada trabajador activo
-        const workerPromises = activeWorkerIds.map(async (workerId) => {
-            try {
-                console.log(`Buscando datos del trabajador: ${workerId}`);
-                
-                // Buscar en la ruta principal de trabajadores
-                const workerSnapshot = await database.ref(`User/Trabajadores/${workerId}`).once('value');
-                const workerData = workerSnapshot.val();
-                
-                if (workerData) {
-                    console.log(`Datos encontrados para ${workerId}:`, workerData);
+                try {
+                    this.updateDebugStatus('workersStatus', 'Trabajadores: Obteniendo lista activa...', 'warning');
                     
-                    // Verificar que tenga coordenadas (pueden estar en active_workers)
-                    let latitude = workerData.latitude;
-                    let longitude = workerData.longitude;
-                    
-                    // Si no tiene coordenadas en User/Trabajadores, usar las de active_workers
-                    if ((!latitude || !longitude) && activeWorkersData[workerId] && activeWorkersData[workerId].l) {
-                        latitude = activeWorkersData[workerId].l[0];
-                        longitude = activeWorkersData[workerId].l[1];
-                        console.log(`Usando coordenadas de active_workers para ${workerId}: ${latitude}, ${longitude}`);
+                    // Desuscribir de cualquier listener anterior
+                    if (this.activeWorkersListener) {
+                        this.activeWorkersListener();
                     }
                     
-                    if (!latitude || !longitude) {
-                        console.warn(`Trabajador ${workerId} sin coordenadas válidas`);
-                        return null;
-                    }
+                    // Configurar listener en tiempo real para active_workers
+                    this.activeWorkersListener = database.ref('active_workers').on('value', async (snapshot) => {
+                        const activeWorkersData = snapshot.val();
+                        
+                        console.log('Datos de active_workers:', activeWorkersData);
+                        
+                        if (!activeWorkersData || Object.keys(activeWorkersData).length === 0) {
+                            console.log('No hay trabajadores activos registrados');
+                            this.updateDebugStatus('workersStatus', 'Trabajadores: Sin activos', 'warning');
+                            this.loadDemoWorkers();
+                            return;
+                        }
+
+                        // Extraer los IDs de trabajadores activos
+                        const activeWorkerIds = Object.keys(activeWorkersData);
+                        console.log('IDs de trabajadores activos:', activeWorkerIds);
+
+                        // Obtener datos completos de cada trabajador activo
+                        const workerPromises = activeWorkerIds.map(async (workerId) => {
+                            try {
+                                console.log(`Buscando datos del trabajador: ${workerId}`);
+                                
+                                // Buscar en la ruta principal de trabajadores
+                                const workerSnapshot = await database.ref(`User/Trabajadores/${workerId}`).once('value');
+                                const workerData = workerSnapshot.val();
+                                
+                                if (workerData && activeWorkersData[workerId].isAvailable) {
+                                    console.log(`Datos encontrados para ${workerId}:`, workerData);
+                                    
+                                    // Verificar que tenga coordenadas (pueden estar en active_workers)
+                                    let latitude = workerData.location?.latitude;
+                                    let longitude = workerData.location?.longitude;
+                                    
+                                    // Si no tiene coordenadas en User/Trabajadores, usar las de active_workers
+                                    if ((!latitude || !longitude) && activeWorkersData[workerId].l) {
+                                        latitude = activeWorkersData[workerId].l[0];
+                                        longitude = activeWorkersData[workerId].l[1];
+                                        console.log(`Usando coordenadas de active_workers para ${workerId}: ${latitude}, ${longitude}`);
+                                    }
+                                    
+                                    if (!latitude || !longitude) {
+                                        console.warn(`Trabajador ${workerId} sin coordenadas válidas`);
+                                        return null;
+                                    }
+                                    
+                                    return {
+                                        id: workerId,
+                                        name: workerData.name || workerData.firstName || 'Sin nombre',
+                                        lastName: workerData.lastName || workerData.lastNombre || '',
+                                        work: (workerData.work || workerData.typeOfWork || 'Sin especificar').trim(),
+                                        description: workerData.description || workerData.descripcion || 'Sin descripción disponible',
+                                        phone: workerData.phone || workerData.telefono || 'No disponible',
+                                        email: workerData.email || 'No disponible',
+                                        rating: workerData.rating || 4.0,
+                                        latitude: parseFloat(latitude),
+                                        longitude: parseFloat(longitude),
+                                        location: workerData.location?.address || 'Bogotá',
+                                        isActive: true
+                                    };
+                                }
+                                return null;
+                            } catch (error) {
+                                console.error(`Error obteniendo datos del trabajador ${workerId}:`, error);
+                                return null;
+                            }
+                        });
+
+                        const workers = await Promise.all(workerPromises);
+                        this.workers = workers.filter(worker => worker !== null);
+                        
+                        console.log(`Trabajadores cargados exitosamente: ${this.workers.length}`);
+                        this.updateDebugStatus('workersStatus', `Trabajadores: ${this.workers.length} cargados`, 'success');
+                        
+                        // Actualizar contador en debug
+                        document.getElementById('workersCount').textContent = `Trabajadores activos: ${this.workers.length}`;
+                        
+                        if (this.workers.length === 0) {
+                            console.log('No se pudieron cargar trabajadores válidos, usando datos demo');
+                            this.loadDemoWorkers();
+                        } else {
+                            this.displayWorkersOnMap();
+                        }
+                    });
                     
-                    return {
-                        id: workerId,
-                        name: workerData.name || workerData.firstName || 'Sin nombre',
-                        lastName: workerData.lastName || workerData.lastNombre || '',
-                        work: (workerData.work || workerData.typeOfWork || 'Sin especificar').trim(),
-                        description: workerData.description || workerData.descripcion || 'Sin descripción disponible',
-                        phone: workerData.phone || workerData.telefono || 'No disponible',
-                        email: workerData.email || 'No disponible',
-                        rating: workerData.rating || 4.0,
-                        latitude: parseFloat(latitude),
-                        longitude: parseFloat(longitude),
-                        location: workerData.location || 'Bogotá',
-                        isActive: true
-                    };
-                } else {
-                    console.warn(`No se encontraron datos para el trabajador: ${workerId}`);
-                    return null;
+                } catch (error) {
+                    console.error('Error cargando trabajadores:', error);
+                    this.updateDebugStatus('workersStatus', 'Trabajadores: Error al cargar', 'error');
+                    this.loadDemoWorkers();
                 }
-            } catch (error) {
-                console.error(`Error obteniendo datos del trabajador ${workerId}:`, error);
-                return null;
             }
-        });
-
-        const workers = await Promise.all(workerPromises);
-        this.workers = workers.filter(worker => worker !== null);
-        
-        console.log(`Trabajadores cargados exitosamente: ${this.workers.length}`);
-        this.updateDebugStatus('workersStatus', `Trabajadores: ${this.workers.length} cargados`, 'success');
-        
-        // Actualizar contador en debug
-        document.getElementById('workersCount').textContent = `Trabajadores activos: ${this.workers.length}`;
-        
-        if (this.workers.length === 0) {
-            console.log('No se pudieron cargar trabajadores válidos, usando datos demo');
-            this.loadDemoWorkers();
-        } else {
-            this.displayWorkersOnMap();
-        }
-        
-    } catch (error) {
-        console.error('Error cargando trabajadores:', error);
-        this.updateDebugStatus('workersStatus', 'Trabajadores: Error al cargar', 'error');
-        this.loadDemoWorkers();
-    }
-}
-
-
 
             loadDemoWorkers() {
                 console.log('Cargando trabajadores demo...');

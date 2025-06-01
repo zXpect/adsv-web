@@ -7,34 +7,45 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">  
     <link rel="stylesheet" href="static/css/dashboard.css">
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6j7YaKesOKWEgaGTsNruStFRKH0pxeQY&libraries=geometry"></script>
 </head>  
-<body class="bg-gray-50 min-h-screen">  
+<body class="min-h-screen">  
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-        <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-            <p class="text-gray-600">Cargando dashboard...</p>
+    <div id="loadingScreen" class="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center transition-opacity duration-300">
+        <div class="text-center bg-white p-6 rounded-lg shadow-lg">
+            <i class="fas fa-spinner fa-spin text-4xl icon-primary mb-4"></i>
+            <p class="text-secondary">Iniciando sesión...</p>
         </div>
     </div>
 
+    <!-- Workers Loading Indicator -->
+    <div id="workersLoadingIndicator" class="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg z-40 flex items-center space-x-3 transition-all duration-300 transform translate-y-full">
+        <i class="fas fa-spinner fa-spin text-primary"></i>
+        <span class="text-sm">Actualizando trabajadores...</span>
+    </div>
+
     <!-- Header -->  
-    <header class="bg-white shadow">  
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">  
-            <div class="flex justify-between items-center py-6">  
+    <header class="bg-white shadow-md">  
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">  
+            <div class="flex justify-between items-center py-5">  
                 <div class="flex items-center">  
-                    <h1 class="text-2xl font-bold text-gray-900">Dashboard Cliente</h1>  
+                    <h1 class="text-2xl font-bold header-title">Dashboard Cliente</h1>  
                 </div>  
                 <div class="flex items-center space-x-4">  
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white text-sm"></i>
+                    <button id="themeToggle" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-moon text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-lg"></i>
                         </div>
-                        <div>
-                            <span id="userName" class="text-gray-900 font-medium">Cargando...</span>
-                            <div id="userEmail" class="text-sm text-gray-500">Cargando...</div>
+                        <div class="user-info">
+                            <span id="userName" class="font-semibold">Cargando...</span>
+                            <div id="userEmail" class="text-sm">Cargando...</div>
                         </div>
                     </div>
-                    <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">  
+                    <button id="logoutBtn" class="btn btn-danger">  
                         <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión  
                     </button>  
                 </div>  
@@ -43,41 +54,26 @@
     </header>  
   
     <!-- Main Content -->  
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">  
+    <main class="container mx-auto py-8 sm:px-6 lg:px-8">  
+        <!-- Grid Container for Two-Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content Column -->
+            <div class="lg:col-span-2">
         <!-- Acciones Principales -->  
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">  
-            <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200">  
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">  
+                    <div class="card">  
                 <div class="p-6">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-search text-blue-500 text-3xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-green-100 rounded-lg">  
+                                    <i class="fas fa-plus icon-green text-3xl"></i>  
                         </div>  
                         <div class="ml-5">  
-                            <h3 class="text-lg font-medium text-gray-900">Buscar Trabajadores</h3>  
-                            <p class="text-sm text-gray-500">Encuentra profesionales cerca de ti</p>  
+                                    <h3 class="text-lg font-semibold text-primary">Nueva Solicitud</h3>  
+                                    <p class="text-sm text-secondary">Solicita un servicio específico</p>  
                         </div>  
                     </div>  
-                    <div class="mt-4">  
-                        <button id="searchWorkersBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">  
-                            Ver Mapa  
-                        </button>  
-                    </div>  
-                </div>  
-            </div>  
-  
-            <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200">  
-                <div class="p-6">  
-                    <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-plus text-green-500 text-3xl"></i>  
-                        </div>  
-                        <div class="ml-5">  
-                            <h3 class="text-lg font-medium text-gray-900">Nueva Solicitud</h3>  
-                            <p class="text-sm text-gray-500">Solicita un servicio específico</p>  
-                        </div>  
-                    </div>  
-                    <div class="mt-4">  
-                        <button id="newRequestBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors duration-200">  
+                            <div class="mt-5">  
+                                <button id="newRequestBtn" class="btn w-full" style="background-color: #10B981; color: white; border-color: #10B981;" onmouseover="this.style.backgroundColor='#059669'; this.style.borderColor='#059669';" onmouseout="this.style.backgroundColor='#10B981'; this.style.borderColor='#10B981';">  
                             Crear Solicitud  
                         </button>  
                     </div>  
@@ -86,49 +82,49 @@
         </div>  
 
         <!-- Estadísticas -->  
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">  
-            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">  
+                    <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-clipboard-list text-blue-400 text-2xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-blue-100 rounded-lg">  
+                                    <i class="fas fa-clipboard-list icon-blue text-2xl"></i>  
                         </div>  
-                        <div class="ml-5 w-0 flex-1">  
+                                <div class="ml-4 w-0 flex-1">  
                             <dl>  
-                                <dt class="text-sm font-medium text-gray-500 truncate">Solicitudes Totales</dt>  
-                                <dd class="text-lg font-medium text-gray-900" id="totalRequests">0</dd>  
+                                        <dt class="text-sm font-medium text-secondary truncate">Solicitudes Totales</dt>  
+                                        <dd class="text-xl font-semibold text-primary" id="totalRequests">0</dd>  
                             </dl>  
                         </div>  
                     </div>  
                 </div>  
             </div>  
   
-            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                    <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-check-circle text-green-400 text-2xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-green-100 rounded-lg">  
+                                    <i class="fas fa-check-circle icon-green text-2xl"></i>  
                         </div>  
-                        <div class="ml-5 w-0 flex-1">  
+                                <div class="ml-4 w-0 flex-1">  
                             <dl>  
-                                <dt class="text-sm font-medium text-gray-500 truncate">Servicios Completados</dt>  
-                                <dd class="text-lg font-medium text-gray-900" id="completedServices">0</dd>  
+                                        <dt class="text-sm font-medium text-secondary truncate">Servicios Completados</dt>  
+                                        <dd class="text-xl font-semibold text-primary" id="completedServices">0</dd>  
                             </dl>  
                         </div>  
                     </div>  
                 </div>  
             </div>  
   
-            <div class="bg-white overflow-hidden shadow rounded-lg">  
+                    <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
-                        <div class="flex-shrink-0">  
-                            <i class="fas fa-clock text-yellow-400 text-2xl"></i>  
+                                <div class="flex-shrink-0 p-3 bg-yellow-100 rounded-lg">  
+                                    <i class="fas fa-clock icon-yellow text-2xl"></i>  
                         </div>  
-                        <div class="ml-5 w-0 flex-1">  
+                                <div class="ml-4 w-0 flex-1">  
                             <dl>  
-                                <dt class="text-sm font-medium text-gray-500 truncate">Solicitudes Activas</dt>  
-                                <dd class="text-lg font-medium text-gray-900" id="activeRequests">0</dd>  
+                                        <dt class="text-sm font-medium text-secondary truncate">Solicitudes Activas</dt>  
+                                        <dd class="text-xl font-semibold text-primary" id="activeRequests">0</dd>  
                             </dl>  
                         </div>  
                     </div>  
@@ -136,41 +132,283 @@
             </div>  
         </div>  
   
-        <!-- Mis Solicitudes - Próximamente -->  
-        <div class="bg-white shadow rounded-lg">  
-            <div class="px-4 py-5 sm:p-6">  
-                <div class="text-center py-12">
-                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-                        <i class="fas fa-clock text-blue-600 text-2xl"></i>
+                <!-- Mapa de Trabajadores Activos -->
+                <div class="card mb-8">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                                    <i class="fas fa-map-marked-alt icon-blue text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-primary">Trabajadores Conectados</h3>
+                                    <p class="text-sm text-secondary">Visualiza trabajadores disponibles en tiempo real</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="flex items-center text-sm text-secondary">
+                                    <i class="fas fa-circle text-green-500 animate-pulse mr-2"></i>
+                                    <span id="activeWorkersCount">0 trabajadores activos</span>
+                                </div>
+                                <button id="refreshMapBtn" class="btn btn-primary">
+                                    <i class="fas fa-sync-alt mr-2"></i>Actualizar Mapa
+                                </button>
+                                <button id="centerMapBtn" class="btn btn-secondary">
+                                    <i class="fas fa-location-arrow mr-2"></i>Mi Ubicación
+                                </button>
+                            </div>
+                        </div>
+                        <div id="workersMap" class="h-96 rounded-lg bg-gray-100">
+                            <!-- El mapa se cargará aquí -->
+                        </div>
+                        <!-- Leyenda del Mapa -->
+                        <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">🔨</div>
+                                <span class="text-sm text-secondary">Carpintería</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs">⚡</div>
+                                <span class="text-sm text-secondary">Electricista</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">🔧</div>
+                                <span class="text-sm text-secondary">Plomería</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs">🎨</div>
+                                <span class="text-sm text-secondary">Pintor</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">🌱</div>
+                                <span class="text-sm text-secondary">Jardinería</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs">🧱</div>
+                                <span class="text-sm text-secondary">Albañilería</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">🛠️</div>
+                                <span class="text-sm text-secondary">Ferretería</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">📍</div>
+                                <span class="text-sm text-secondary">Mi Ubicación</span>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">Gestión de Solicitudes</h3>
-                    <p class="text-gray-500 mb-4">Esta funcionalidad estará disponible próximamente</p>
-                    <div class="text-sm text-gray-400">
-                        <p>Podrás ver y gestionar todas tus solicitudes de servicio desde aquí</p>
+                </div>
+
+                <!-- Trabajadores Disponibles -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-primary">Trabajadores Conectados</h2>
+                        <div class="flex items-center space-x-4">
+                            <select id="filterProfession" 
+                                    class="border rounded-lg px-4 py-2 focus:outline-none focus:border-primary transition-colors">
+                                <option value="">Todas las profesiones</option>
+                                <option value="Carpintería">🔨 Carpintería</option>
+                                <option value="Electricista">⚡ Electricista</option>
+                                <option value="Plomería">🔧 Plomería</option>
+                                <option value="Pintor">🎨 Pintor</option>
+                                <option value="Jardinería">🌱 Jardinería</option>
+                                <option value="Albañilería">🧱 Albañilería</option>
+                                <option value="Ferretería">🛠️ Ferretería</option>
+                            </select>
+                            <select id="distanceRange" 
+                                    class="border rounded-lg px-4 py-2 focus:outline-none focus:border-primary transition-colors">
+                                <option value="">Cualquier distancia</option>
+                                <option value="1">Hasta 1 km</option>
+                                <option value="2">Hasta 2 km</option>
+                                <option value="5">Hasta 5 km</option>
+                                <option value="10">Hasta 10 km</option>
+                                <option value="20">Hasta 20 km</option>
+                                <option value="50">Hasta 50 km</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="workersLoadingState" class="text-center py-8 hidden">
+                        <i class="fas fa-spinner fa-spin text-4xl icon-primary mb-4"></i>
+                        <p class="text-secondary">Cargando trabajadores...</p>
+                    </div>
+
+                    <div id="noWorkersState" class="text-center py-8 hidden">
+                        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gray-100 mb-4">
+                            <i class="fas fa-user-slash text-2xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-primary mb-2">No hay trabajadores conectados</h3>
+                        <p class="text-secondary">No se encontraron trabajadores disponibles en tu área</p>
+                    </div>
+
+                    <div class="workers-grid" id="workersGrid">
+                        <!-- Worker cards will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Request Management -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24">
+                    <div class="card">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                                        <i class="fas fa-tasks icon-blue text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-primary">Gestión de Solicitudes</h3>
+                                </div>
+                            </div>
+
+                            <!-- Request Management Content -->
+                            <div class="space-y-6">
+                                <!-- Active Requests Section -->
+                                <div>
+                                    <h4 class="font-medium text-primary mb-3">Solicitudes Activas</h4>
+                                    <div id="activeRequestsList" class="space-y-3">
+                                        <!-- Placeholder for active requests -->
+                                        <div class="text-center text-secondary py-4">
+                                            <i class="fas fa-clipboard-list text-4xl mb-2 text-blue-200"></i>
+                                            <p>No hay solicitudes activas</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Recent Activity Section -->
+                                <div>
+                                    <h4 class="font-medium text-primary mb-3">Actividad Reciente</h4>
+                                    <div id="recentActivityList" class="space-y-3">
+                                        <!-- Placeholder for recent activity -->
+                                        <div class="text-center text-secondary py-4">
+                                            <i class="fas fa-history text-4xl mb-2 text-blue-200"></i>
+                                            <p>No hay actividad reciente</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="pt-4 border-t border-gray-200">
+                                    <button id="newRequestBtnSidebar" class="btn btn-primary w-full mb-3">
+                                        <i class="fas fa-plus mr-2"></i>Nueva Solicitud
+                                    </button>
+                                    <button onclick="window.location.href='service-history.html'" class="btn btn-secondary w-full">
+                                        <i class="fas fa-history mr-2"></i>Ver Historial
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>  
         </div>  
     </main>  
 
-    <!-- Logout Confirmation Modal -->
-    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-40">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <i class="fas fa-sign-out-alt text-red-600 text-xl"></i>
+    <!-- Worker Details Modal -->
+    <div id="workerDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-40">
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="modal-content p-6 border w-full max-w-2xl mx-auto">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="text-xl font-semibold text-primary">Detalles del Trabajador</h3>
+                    <button type="button" onclick="closeWorkerModal()" class="text-secondary hover:text-primary transition-colors">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-4">Cerrar Sesión</h3>
+                <div id="workerDetailsContent" class="space-y-6">
+                    <!-- Worker Profile Header -->
+                    <div class="flex items-center space-x-4">
+                        <div class="worker-avatar-large w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-4xl">
+                            <!-- Worker icon will be inserted here -->
+                        </div>
+                        <div>
+                            <h4 class="text-2xl font-bold worker-name mb-1"><!-- Name --></h4>
+                            <div class="flex items-center space-x-2">
+                                <span class="worker-profession text-lg text-secondary"><!-- Profession --></span>
+                                <span class="status-badge"><!-- Status --></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating and Experience -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                            <div class="text-sm text-secondary mb-1">Calificación</div>
+                            <div class="flex items-center">
+                                <div class="worker-rating text-2xl font-bold mr-2"><!-- Rating --></div>
+                                <div class="worker-stars text-yellow-400"><!-- Stars --></div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                            <div class="text-sm text-secondary mb-1">Servicios Completados</div>
+                            <div class="worker-jobs text-2xl font-bold"><!-- Completed Jobs --></div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <h5 class="font-semibold mb-2">Acerca del Trabajador</h5>
+                        <p class="worker-description text-secondary"><!-- Description --></p>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="font-semibold mb-2">Información de Contacto</h5>
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-phone text-green-500"></i>
+                                    <span class="worker-phone"><!-- Phone --></span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-envelope text-blue-500"></i>
+                                    <span class="worker-email"><!-- Email --></span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-map-marker-alt text-red-500"></i>
+                                    <span class="worker-location"><!-- Location --></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-2">Horario de Trabajo</h5>
+                            <div class="worker-schedule space-y-1 text-sm">
+                                <!-- Schedule will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-4 pt-4 border-t">
+                        <button onclick="requestService(selectedWorkerId)" class="btn btn-primary flex-1">
+                            <i class="fas fa-handshake mr-2"></i>Solicitar Servicio
+                        </button>
+                        <button onclick="contactWorker(selectedWorkerId)" class="btn btn-secondary flex-1">
+                            <i class="fas fa-comments mr-2"></i>Contactar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-40 flex items-center justify-center">
+        <div class="modal-content p-6 border w-full max-w-sm mx-auto">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-sign-out-alt icon-red text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-primary mt-2">Cerrar Sesión</h3>
                 <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-secondary">
                         ¿Estás seguro de que quieres cerrar sesión?
                     </p>
                 </div>
                 <div class="flex justify-center space-x-4 mt-4">
-                    <button id="cancelLogout" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button id="cancelLogout" class="btn btn-secondary">
                         Cancelar
                     </button>
-                    <button id="confirmLogout" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <button id="confirmLogout" class="btn btn-danger">
                         <i class="fas fa-spinner fa-spin mr-2 hidden" id="logoutSpinner"></i>
                         Cerrar Sesión
                     </button>
@@ -180,19 +418,19 @@
     </div>
 
     <!-- New Request Modal -->
-    <div id="newRequestModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-40">
-        <div class="relative top-10 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+    <div id="newRequestModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full hidden z-40 flex items-center justify-center">
+        <div class="modal-content p-6 border w-full max-w-md mx-auto">
             <div class="mt-3">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Nueva Solicitud de Servicio</h3>
-                    <button id="closeRequestModal" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-primary">Nueva Solicitud de Servicio</h3>
+                    <button id="closeRequestModal" class="text-secondary hover:text-primary">
+                        <i class="fas fa-times text-2xl"></i>
                     </button>
                 </div>
-                <form id="newRequestForm" class="space-y-4">
+                <form id="newRequestForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Servicio</label>
-                        <select id="serviceType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <label for="serviceType" class="block text-sm font-medium text-secondary mb-1">Tipo de Servicio</label>
+                        <select id="serviceType" name="serviceType" class="w-full" required>
                             <option value="">Seleccionar servicio</option>
                             <option value="plomeria">Plomería</option>
                             <option value="electricidad">Electricidad</option>
@@ -203,21 +441,21 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                        <textarea id="serviceDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe el trabajo que necesitas..." required></textarea>
+                        <label for="serviceDescription" class="block text-sm font-medium text-secondary mb-1">Descripción</label>
+                        <textarea id="serviceDescription" name="serviceDescription" rows="3" class="w-full" placeholder="Describe el trabajo que necesitas..." required></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Presupuesto Estimado</label>
+                        <label for="estimatedBudget" class="block text-sm font-medium text-secondary mb-1">Presupuesto Estimado</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-2 text-gray-500">$</span>
-                            <input type="number" id="estimatedBudget" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" min="0">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-sm">$</span>
+                            <input type="number" id="estimatedBudget" name="estimatedBudget" class="w-full pl-7" placeholder="0" min="0">
                         </div>
                     </div>
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" id="cancelRequest" class="px-4 py-2 bg-gray-300 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-400">
+                    <div class="flex justify-end space-x-3 pt-3">
+                        <button type="button" id="cancelRequest" class="btn btn-secondary">
                             Cancelar
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
+                        <button type="submit" class="btn" style="background-color: #10B981; color: white; border-color: #10B981;" onmouseover="this.style.backgroundColor='#059669'; this.style.borderColor='#059669';" onmouseout="this.style.backgroundColor='#10B981'; this.style.borderColor='#10B981';">
                             <i class="fas fa-spinner fa-spin mr-2 hidden" id="requestSpinner"></i>
                             Crear Solicitud
                         </button>
@@ -234,5 +472,125 @@
 
     <script src="static\js\config\firebase-config.js"></script>
     <script src="static\js\dashboard\client-dashboard.js"></script>
+
+    <script>
+        // Theme toggle functionality
+        function initTheme() {
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const themeIcon = themeToggleBtn.querySelector('i');
+            const html = document.documentElement;
+            
+            // Check for saved theme preference or use system preference
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Apply initial theme
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                html.classList.add('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+            
+            // Toggle theme on button click
+            themeToggleBtn.addEventListener('click', () => {
+                html.classList.toggle('dark');
+                
+                // Update icon
+                if (html.classList.contains('dark')) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
+        // Initialize theme and dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            clientDashboard = new ClientDashboard();
+        });
+
+        function requestService(workerId) {
+            alert(`Solicitud de servicio para el trabajador ${workerId} - Próximamente`);
+        }
+
+        function closeWorkerModal() {
+            document.getElementById('workerDetailsModal').classList.add('hidden');
+        }
+    </script>
+
+    <style>
+        /* Light theme (default) */
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        /* Dark theme */
+        .dark {
+            --bg-color: #111827;
+            --text-color: #f9fafb;
+            --card-bg: #1f2937;
+            --border-color: #374151;
+        }
+
+        /* Apply theme variables */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        input, select, textarea {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        /* Dark mode specific styles */
+        .dark .bg-white {
+            background-color: var(--card-bg);
+        }
+
+        .dark .text-gray-600 {
+            color: #9ca3af;
+        }
+
+        .dark .border-gray-200 {
+            border-color: var(--border-color);
+        }
+
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Smooth transitions */
+        * {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+    </style>
 </body>
 </html>
