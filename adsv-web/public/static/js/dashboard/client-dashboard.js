@@ -15,8 +15,17 @@
                 this.workers = [];
                 this.infoWindows = [];
                 this.activeWorkersListener = null;
+                this.userMarker = null;
+                this.workerMarkers = [];
+                this.activeWorkers = [];
+                this.selectedWorkerId = null;
+                this.userLocation = null;
+                this.distanceFilter = null;
+                this.professionFilter = null;
+                this.isLoadingWorkers = false;
                 
                 this.init();
+                this.initTheme();
             }
 
             async init() {
@@ -136,11 +145,196 @@
                 document.getElementById('activeRequests').textContent = activeRequests;
             }
 
+            initTheme() {
+                const themeToggleBtn = document.getElementById('themeToggle');
+                const themeToggleDesktop = document.getElementById('themeToggleDesktop');
+                const themeIcon = themeToggleBtn.querySelector('i');
+                const themeIconDesktop = themeToggleDesktop.querySelector('i');
+                const html = document.documentElement;
+                
+                // Check for saved theme preference or use system preference
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                // Apply initial theme
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    html.classList.add('dark');
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    themeIconDesktop.classList.remove('fa-moon');
+                    themeIconDesktop.classList.add('fa-sun');
+                }
+                
+                // Toggle theme on button click (mobile)
+                themeToggleBtn.addEventListener('click', () => {
+                    this.toggleTheme(themeIcon, themeIconDesktop);
+                });
+
+                // Toggle theme on button click (desktop)
+                themeToggleDesktop.addEventListener('click', () => {
+                    this.toggleTheme(themeIcon, themeIconDesktop);
+                });
+
+                // Update map style if map exists
+                if (this.map) {
+                    this.updateMapStyle();
+                }
+            }
+
+            toggleTheme(mobileIcon, desktopIcon) {
+                const html = document.documentElement;
+                html.classList.toggle('dark');
+                
+                // Update both icons
+                if (html.classList.contains('dark')) {
+                    mobileIcon.classList.remove('fa-moon');
+                    mobileIcon.classList.add('fa-sun');
+                    desktopIcon.classList.remove('fa-moon');
+                    desktopIcon.classList.add('fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    mobileIcon.classList.remove('fa-sun');
+                    mobileIcon.classList.add('fa-moon');
+                    desktopIcon.classList.remove('fa-sun');
+                    desktopIcon.classList.add('fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+
+                // Update map style if map exists
+                if (this.map) {
+                    this.updateMapStyle();
+                }
+            }
+
+            updateMapStyle() {
+                const isDark = document.documentElement.classList.contains('dark');
+                const styles = isDark ? [
+                    { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+                    { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+                    { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+                    {
+                        featureType: "administrative.locality",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#d59563" }]
+                    },
+                    {
+                        featureType: "poi",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#d59563" }]
+                    },
+                    {
+                        featureType: "poi.park",
+                        elementType: "geometry",
+                        stylers: [{ color: "#263c3f" }]
+                    },
+                    {
+                        featureType: "poi.park",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#6b9a76" }]
+                    },
+                    {
+                        featureType: "road",
+                        elementType: "geometry",
+                        stylers: [{ color: "#38414e" }]
+                    },
+                    {
+                        featureType: "road",
+                        elementType: "geometry.stroke",
+                        stylers: [{ color: "#212a37" }]
+                    },
+                    {
+                        featureType: "road",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#9ca5b3" }]
+                    },
+                    {
+                        featureType: "road.highway",
+                        elementType: "geometry",
+                        stylers: [{ color: "#746855" }]
+                    },
+                    {
+                        featureType: "road.highway",
+                        elementType: "geometry.stroke",
+                        stylers: [{ color: "#1f2835" }]
+                    },
+                    {
+                        featureType: "road.highway",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#f3d19c" }]
+                    },
+                    {
+                        featureType: "transit",
+                        elementType: "geometry",
+                        stylers: [{ color: "#2f3948" }]
+                    },
+                    {
+                        featureType: "transit.station",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#d59563" }]
+                    },
+                    {
+                        featureType: "water",
+                        elementType: "geometry",
+                        stylers: [{ color: "#17263c" }]
+                    },
+                    {
+                        featureType: "water",
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#515c6d" }]
+                    },
+                    {
+                        featureType: "water",
+                        elementType: "labels.text.stroke",
+                        stylers: [{ color: "#17263c" }]
+                    }
+                ] : [];
+
+                this.map.setOptions({ styles });
+            }
+
             setupEventListeners() {
                 // Botón de cerrar sesión
                 document.getElementById('logoutBtn').addEventListener('click', () => {
                     this.showLogoutModal();
                 });
+
+                // Mobile menu handling with Bootstrap
+                const navbarToggler = document.querySelector('.navbar-toggler');
+                const headerMenu = document.getElementById('headerMenu');
+
+                // Initialize Bootstrap collapse
+                if (navbarToggler && headerMenu) {
+                    new bootstrap.Collapse(headerMenu, {
+                        toggle: false
+                    });
+                }
+
+                // Close menu on click outside
+                document.addEventListener('click', (e) => {
+                    const isNavbarToggler = e.target.closest('.navbar-toggler');
+                    const isHeaderMenu = e.target.closest('#headerMenu');
+                    
+                    if (!isNavbarToggler && !isHeaderMenu && headerMenu.classList.contains('show')) {
+                        bootstrap.Collapse.getInstance(headerMenu).hide();
+                    }
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 992 && headerMenu.classList.contains('show')) {
+                        bootstrap.Collapse.getInstance(headerMenu).hide();
+                    }
+                });
+
+                // Handle mobile back button
+                window.addEventListener('popstate', () => {
+                    this.hideAllModals();
+                    headerMenu?.classList.add('hidden');
+                    headerMenu?.classList.remove('show');
+                });
+
+                // Optimize map for mobile
+                this.setupResponsiveMap();
 
                 // Modal de confirmación de logout
                 document.getElementById('cancelLogout').addEventListener('click', () => {
@@ -194,6 +388,85 @@
 
                 // Actualizar trabajadores cada 5 minutos
                 setInterval(() => this.loadActiveWorkers(), 300000);
+
+                // Botón de perfil y manejo del modal
+                const viewProfileBtn = document.getElementById('viewProfileBtn');
+                const profileModal = document.getElementById('profileModal');
+                const closeProfileModal = document.getElementById('closeProfileModal');
+
+                if (viewProfileBtn) {
+                    viewProfileBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showProfileModal();
+                    });
+                }
+
+                if (closeProfileModal) {
+                    closeProfileModal.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.hideProfileModal();
+                    });
+                }
+
+                // Cerrar modal al hacer clic fuera
+                if (profileModal) {
+                    profileModal.addEventListener('click', (e) => {
+                        if (e.target === profileModal) {
+                            this.hideProfileModal();
+                        }
+                    });
+                }
+
+                // Prevenir que el scroll del body cuando el modal está abierto
+                document.addEventListener('touchmove', (e) => {
+                    if (profileModal && !profileModal.classList.contains('hidden')) {
+                        if (!profileModal.contains(e.target)) {
+                            e.preventDefault();
+                        }
+                    }
+                }, { passive: false });
+
+                // Manejar cambios de orientación
+                window.addEventListener('orientationchange', () => {
+                    if (profileModal && !profileModal.classList.contains('hidden')) {
+                        // Reajustar el modal después del cambio de orientación
+                        setTimeout(() => {
+                            this.adjustModalPosition();
+                        }, 100);
+                    }
+                });
+
+                // Formulario de perfil
+                const profileForm = document.getElementById('profileForm');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        await this.updateProfile();
+                    });
+                }
+
+                // Worker modal close button
+                const closeWorkerModalBtn = document.querySelector('[data-action="close-worker-modal"]');
+                if (closeWorkerModalBtn) {
+                    closeWorkerModalBtn.addEventListener('click', () => this.closeWorkerModal());
+                }
+
+                // Close modal when clicking outside
+                const workerModal = document.getElementById('workerDetailsModal');
+                if (workerModal) {
+                    workerModal.addEventListener('click', (e) => {
+                        if (e.target === workerModal) {
+                            this.closeWorkerModal();
+                        }
+                    });
+                }
+
+                // Close modal with Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !workerModal?.classList.contains('hidden')) {
+                        this.closeWorkerModal();
+                    }
+                });
             }
 
             showLogoutModal() {
@@ -1008,6 +1281,143 @@
                     indicator.style.transform = 'translateY(full)';
                 }
             }
+
+            setupResponsiveMap() {
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        if (this.map) {
+                            google.maps.event.trigger(this.map, 'resize');
+                            if (this.currentLocation) {
+                                this.map.setCenter(this.currentLocation);
+                            }
+                        }
+                    }, 250);
+                });
+
+                // Ajustar zoom para móviles
+                if (window.innerWidth < 640) {
+                    this.map?.setZoom(14);
+                }
+            }
+
+            hideAllModals() {
+                document.getElementById('logoutModal')?.classList.add('hidden');
+                document.getElementById('newRequestModal')?.classList.add('hidden');
+                document.getElementById('workerDetailsModal')?.classList.add('hidden');
+            }
+
+            showProfileModal() {
+                const modal = document.getElementById('profileModal');
+                if (modal) {
+                    // Cargar datos actuales antes de mostrar el modal
+                    this.loadCurrentUserData().then(() => {
+                        modal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+                        this.adjustModalPosition();
+                    });
+                }
+            }
+
+            hideProfileModal() {
+                const modal = document.getElementById('profileModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = ''; // Restaurar scroll del body
+                }
+            }
+
+            adjustModalPosition() {
+                const modal = document.getElementById('profileModal');
+                const modalContent = modal?.querySelector('.modal-content');
+                if (modalContent) {
+                    // Asegurar que el modal esté dentro de la ventana visible
+                    const viewportHeight = window.innerHeight;
+                    const modalHeight = modalContent.offsetHeight;
+                    
+                    if (modalHeight > viewportHeight) {
+                        modalContent.style.height = '90vh';
+                        modalContent.style.overflowY = 'auto';
+                    } else {
+                        modalContent.style.height = '';
+                        modalContent.style.overflowY = '';
+                    }
+                }
+            }
+
+            async loadCurrentUserData() {
+                try {
+                    if (!this.currentUser) return;
+
+                    const clientRef = this.database.ref(`User/Clientes/${this.currentUser.uid}`);
+                    const snapshot = await clientRef.once('value');
+                    const userData = snapshot.val();
+
+                    if (userData) {
+                        document.getElementById('profileName').value = userData.name || '';
+                        document.getElementById('profileEmail').value = userData.email || '';
+                        document.getElementById('profilePhone').value = userData.phone || '';
+                        document.getElementById('profileAddress').value = userData.address || '';
+                    }
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                    this.showNotification('Error al cargar datos del perfil', 'error');
+                }
+            }
+
+            async updateProfile() {
+                const submitBtn = document.querySelector('#profileForm button[type="submit"]');
+                const spinner = document.getElementById('profileSpinner');
+                
+                try {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('hidden');
+                    
+                    const profileData = {
+                        name: document.getElementById('profileName').value.trim(),
+                        phone: document.getElementById('profilePhone').value.trim(),
+                        address: document.getElementById('profileAddress').value.trim(),
+                        updatedAt: new Date().toISOString()
+                    };
+
+                    // Validaciones
+                    if (!profileData.name) throw new Error('El nombre es requerido');
+                    if (!profileData.phone) throw new Error('El teléfono es requerido');
+                    if (!profileData.address) throw new Error('La dirección es requerida');
+                    
+                    await this.database.ref(`User/Clientes/${this.currentUser.uid}`).update(profileData);
+                    
+                    this.showNotification('Perfil actualizado exitosamente', 'success');
+                    this.hideProfileModal();
+                    
+                    // Recargar datos del usuario
+                    await this.loadUserData(this.currentUser.uid);
+                    
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    this.showNotification(error.message || 'Error al actualizar perfil', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    spinner.classList.add('hidden');
+                }
+            }
+
+            closeWorkerModal() {
+                const modal = document.getElementById('workerDetailsModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    // Reset selected worker
+                    this.selectedWorkerId = null;
+                }
+            }
+
+            requestService(workerId) {
+                // Implementar la lógica de solicitud de servicio
+                console.log(`Solicitando servicio del trabajador ${workerId}`);
+                // Por ahora mostrar un mensaje temporal
+                this.showNotification('Función de solicitud de servicio próximamente disponible', 'info');
+            }
         }
 
         // Inicializar dashboard cuando se carga la página
@@ -1034,11 +1444,6 @@
         });
 
         // Funciones globales para los botones en InfoWindows
-        function requestService(workerId) {
-            // Implementar lógica para solicitar servicio
-            document.getElementById('newRequestModal').classList.remove('hidden');
-        }
-
         function viewWorkerProfile(workerId) {
             // Implementar lógica para ver perfil del trabajador
             const worker = clientDashboard.workers.find(w => w.id === workerId);

@@ -15,6 +15,7 @@ class WorkerDashboard {
         this.pendingRequests = [];
         
         this.init();
+        this.initTheme();
     }
 
     async init() {
@@ -222,20 +223,7 @@ class WorkerDashboard {
 
                 // Agregar InfoWindow con información del trabajador
                 const infoWindow = new google.maps.InfoWindow({
-                    content: `
-                        <div class="p-4">
-                            <h3 class="font-semibold text-lg mb-2">${workerData.name} ${workerData.lastName || ''}</h3>
-                            <p class="text-sm mb-2">
-                                <span class="text-xl mr-2">${workerIcon}</span>
-                                ${workType}
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                ${workerData.rating || '5.0'} / 5.0
-                            </p>
-                            ${workerData.description ? `<p class="text-sm mt-2">${workerData.description}</p>` : ''}
-                        </div>
-                    `
+                    content: this.createWorkerInfoContent(workerData)
                 });
 
                 this.locationMarker.addListener('click', () => {
@@ -268,6 +256,80 @@ class WorkerDashboard {
                 this.locationMarker.setPosition(position);
             }
         }
+    }
+
+    createWorkerInfoContent(worker) {
+        return `
+            <div class="info-window p-4 min-w-[300px] bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+                <!-- Encabezado -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-3"
+                             style="background: ${this.getCategoryColor(worker.work)}">
+                            ${this.getWorkerIcon(worker.work)}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 dark:text-white text-lg">${worker.name}</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium" style="color: ${this.getCategoryColor(worker.work)}">${worker.work}</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    ● Disponible
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calificación y Servicios -->
+                <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg mb-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="text-yellow-400 text-lg mr-2">★</span>
+                            <span class="font-bold text-gray-700 dark:text-gray-200">${worker.rating?.toFixed(1) || '5.0'}</span>
+                        </div>
+                        <div class="text-sm text-blue-600 dark:text-blue-400">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            ${worker.completedJobs || '0'} servicios completados
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="mb-4">
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        ${worker.description || 'Sin descripción disponible'}
+                    </p>
+                </div>
+
+                <!-- Información de Contacto -->
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                        <i class="fas fa-phone text-green-500 dark:text-green-400 w-5"></i>
+                        <span class="ml-2 text-gray-700 dark:text-gray-200 text-sm">${worker.phone || 'No disponible'}</span>
+                    </div>
+                    <div class="flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                        <i class="fas fa-envelope text-blue-500 dark:text-blue-400 w-5"></i>
+                        <span class="ml-2 text-gray-700 dark:text-gray-200 text-sm">${worker.email || 'No disponible'}</span>
+                    </div>
+                    <div class="flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                        <i class="fas fa-map-marker-alt text-red-500 dark:text-red-400 w-5"></i>
+                        <span class="ml-2 text-gray-700 dark:text-gray-200 text-sm">${worker.location || 'Ubicación no especificada'}</span>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="flex space-x-2 pt-3 border-t border-gray-200 dark:border-gray-600">
+                    <button onclick="viewServiceDetails('${worker.id}')" 
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fas fa-eye mr-2"></i>Ver Detalles
+                    </button>
+                    <button onclick="contactWorker('${worker.id}')"
+                            class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fas fa-phone mr-2"></i>Contactar
+                    </button>
+                </div>
+            </div>
+        `;
     }
 
     async loadActiveServices() {
@@ -400,6 +462,34 @@ class WorkerDashboard {
             this.showLogoutModal();
         });
 
+        // Mobile menu handling with Bootstrap
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const headerMenu = document.getElementById('headerMenu');
+
+        // Initialize Bootstrap collapse
+        if (navbarToggler && headerMenu) {
+            new bootstrap.Collapse(headerMenu, {
+                toggle: false
+            });
+        }
+
+        // Close menu on click outside
+        document.addEventListener('click', (e) => {
+            const isNavbarToggler = e.target.closest('.navbar-toggler');
+            const isHeaderMenu = e.target.closest('#headerMenu');
+            
+            if (!isNavbarToggler && !isHeaderMenu && headerMenu.classList.contains('show')) {
+                bootstrap.Collapse.getInstance(headerMenu).hide();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 992 && headerMenu.classList.contains('show')) {
+                bootstrap.Collapse.getInstance(headerMenu).hide();
+            }
+        });
+
         // Modal de confirmación de logout
         document.getElementById('cancelLogout').addEventListener('click', () => {
             this.hideLogoutModal();
@@ -423,25 +513,65 @@ class WorkerDashboard {
             this.updateLocation();
         });
 
-        // Botón de editar perfil
-        document.getElementById('viewProfileBtn').addEventListener('click', () => {
-            this.showProfileModal();
-        });
+        // Botón de editar perfil y manejo del modal
+        const viewProfileBtn = document.getElementById('viewProfileBtn');
+        const profileModal = document.getElementById('profileModal');
+        const closeProfileModal = document.getElementById('closeProfileModal');
 
-        // Cerrar modal de perfil
-        document.getElementById('closeProfileModal').addEventListener('click', () => {
-            this.hideProfileModal();
+        if (viewProfileBtn) {
+            viewProfileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showProfileModal();
+            });
+        }
+
+        if (closeProfileModal) {
+            closeProfileModal.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.hideProfileModal();
+            });
+        }
+
+        // Cerrar modal al hacer clic fuera
+        if (profileModal) {
+            profileModal.addEventListener('click', (e) => {
+                if (e.target === profileModal) {
+                    this.hideProfileModal();
+                }
+            });
+        }
+
+        // Prevenir que el scroll del body cuando el modal está abierto
+        document.addEventListener('touchmove', (e) => {
+            if (profileModal && !profileModal.classList.contains('hidden')) {
+                if (!profileModal.contains(e.target)) {
+                    e.preventDefault();
+                }
+            }
+        }, { passive: false });
+
+        // Manejar cambios de orientación
+        window.addEventListener('orientationchange', () => {
+            if (profileModal && !profileModal.classList.contains('hidden')) {
+                // Reajustar el modal después del cambio de orientación
+                setTimeout(() => {
+                    this.adjustModalPosition();
+                }, 100);
+            }
         });
 
         // Formulario de perfil
-        document.getElementById('profileForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.updateProfile();
-        });
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.updateProfile();
+            });
+        }
 
         // Tema oscuro/claro
         document.getElementById('themeToggle').addEventListener('click', () => {
-            this.toggleTheme();
+            this.toggleTheme(themeIcon, themeIconDesktop);
         });
 
         // Cerrar modales al hacer clic fuera
@@ -451,6 +581,31 @@ class WorkerDashboard {
                     this.hideAllModals();
                 }
             });
+        });
+
+        // Handle mobile back button
+        window.addEventListener('popstate', () => {
+            this.hideAllModals();
+            headerMenu?.classList.add('hidden');
+            headerMenu?.classList.remove('show');
+        });
+
+        // Optimize map for mobile
+        this.setupResponsiveMap();
+    }
+
+    setupResponsiveMap() {
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (this.map) {
+                    google.maps.event.trigger(this.map, 'resize');
+                    if (this.locationMarker) {
+                        this.map.setCenter(this.locationMarker.getPosition());
+                    }
+                }
+            }, 250);
         });
     }
 
@@ -463,11 +618,23 @@ class WorkerDashboard {
     }
 
     showProfileModal() {
-        document.getElementById('profileModal').classList.remove('hidden');
+        const modal = document.getElementById('profileModal');
+        if (modal) {
+            // Cargar datos actuales antes de mostrar el modal
+            this.loadCurrentUserData().then(() => {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+                this.adjustModalPosition();
+            });
+        }
     }
 
     hideProfileModal() {
-        document.getElementById('profileModal').classList.add('hidden');
+        const modal = document.getElementById('profileModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Restaurar scroll del body
+        }
     }
 
     hideAllModals() {
@@ -482,6 +649,33 @@ class WorkerDashboard {
         document.getElementById('profilePhone').value = userData.phone || '';
     }
 
+    async loadCurrentUserData() {
+        try {
+            if (!this.currentUser) return;
+
+            const workerRef = this.database.ref(`User/Trabajadores/${this.currentUser.uid}`);
+            const snapshot = await workerRef.once('value');
+            const userData = snapshot.val();
+
+            if (userData) {
+                document.getElementById('profileName').value = userData.name || '';
+                document.getElementById('profileWork').value = userData.work || '';
+                document.getElementById('profileDescription').value = userData.description || '';
+                document.getElementById('profilePhone').value = userData.phone || '';
+
+                // Actualizar vista previa del avatar si existe
+                const avatarPreview = document.querySelector('.worker-avatar-preview');
+                if (avatarPreview) {
+                    avatarPreview.style.backgroundColor = this.getCategoryColor(userData.work);
+                    avatarPreview.innerHTML = this.getWorkerIcon(userData.work);
+                }
+            }
+        } catch (error) {
+            console.error('Error cargando datos del usuario:', error);
+            this.showNotification('Error al cargar datos del perfil', 'error');
+        }
+    }
+
     async updateProfile() {
         const submitBtn = document.querySelector('#profileForm button[type="submit"]');
         const spinner = document.getElementById('profileSpinner');
@@ -491,12 +685,23 @@ class WorkerDashboard {
             spinner.classList.remove('hidden');
             
             const profileData = {
-                name: document.getElementById('profileName').value,
+                name: document.getElementById('profileName').value.trim(),
                 work: document.getElementById('profileWork').value,
-                description: document.getElementById('profileDescription').value,
-                phone: document.getElementById('profilePhone').value,
+                description: document.getElementById('profileDescription').value.trim(),
+                phone: document.getElementById('profilePhone').value.trim(),
                 updatedAt: new Date().toISOString()
             };
+
+            // Validaciones
+            if (!profileData.name) {
+                throw new Error('El nombre es requerido');
+            }
+            if (!profileData.work) {
+                throw new Error('Debes seleccionar una profesión');
+            }
+            if (!profileData.phone) {
+                throw new Error('El teléfono es requerido');
+            }
             
             await this.database.ref(`User/Trabajadores/${this.currentUser.uid}`).update(profileData);
             
@@ -506,9 +711,15 @@ class WorkerDashboard {
             // Recargar datos del usuario
             await this.loadUserData(this.currentUser.uid);
             
+            // Actualizar marcador en el mapa si existe
+            if (this.locationMarker) {
+                const position = this.locationMarker.getPosition();
+                await this.updateMapLocation(position.lat(), position.lng());
+            }
+            
         } catch (error) {
             console.error('Error actualizando perfil:', error);
-            this.showNotification('Error al actualizar perfil', 'error');
+            this.showNotification(error.message || 'Error al actualizar perfil', 'error');
         } finally {
             submitBtn.disabled = false;
             spinner.classList.add('hidden');
@@ -660,19 +871,115 @@ class WorkerDashboard {
         }
     }
 
-    toggleTheme() {
-        const body = document.body;
-        const themeIcon = document.getElementById('themeIcon');
+    toggleTheme(mobileIcon, desktopIcon) {
+        const html = document.documentElement;
+        html.classList.toggle('dark');
         
-        body.classList.toggle('dark-theme');
-        
-        if (body.classList.contains('dark-theme')) {
-            themeIcon.className = 'fas fa-sun';
+        // Update both icons
+        if (html.classList.contains('dark')) {
+            mobileIcon.classList.remove('fa-moon');
+            mobileIcon.classList.add('fa-sun');
+            desktopIcon.classList.remove('fa-moon');
+            desktopIcon.classList.add('fa-sun');
             localStorage.setItem('theme', 'dark');
         } else {
-            themeIcon.className = 'fas fa-moon';
+            mobileIcon.classList.remove('fa-sun');
+            mobileIcon.classList.add('fa-moon');
+            desktopIcon.classList.remove('fa-sun');
+            desktopIcon.classList.add('fa-moon');
             localStorage.setItem('theme', 'light');
         }
+
+        // Update map styles if map exists
+        if (this.map) {
+            this.updateMapStyle();
+        }
+    }
+
+    updateMapStyle() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const styles = isDark ? [
+            { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+            {
+                featureType: "administrative.locality",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }]
+            },
+            {
+                featureType: "poi",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }]
+            },
+            {
+                featureType: "poi.park",
+                elementType: "geometry",
+                stylers: [{ color: "#263c3f" }]
+            },
+            {
+                featureType: "poi.park",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#6b9a76" }]
+            },
+            {
+                featureType: "road",
+                elementType: "geometry",
+                stylers: [{ color: "#38414e" }]
+            },
+            {
+                featureType: "road",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#212a37" }]
+            },
+            {
+                featureType: "road",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#9ca5b3" }]
+            },
+            {
+                featureType: "road.highway",
+                elementType: "geometry",
+                stylers: [{ color: "#746855" }]
+            },
+            {
+                featureType: "road.highway",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#1f2835" }]
+            },
+            {
+                featureType: "road.highway",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#f3d19c" }]
+            },
+            {
+                featureType: "transit",
+                elementType: "geometry",
+                stylers: [{ color: "#2f3948" }]
+            },
+            {
+                featureType: "transit.station",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }]
+            },
+            {
+                featureType: "water",
+                elementType: "geometry",
+                stylers: [{ color: "#17263c" }]
+            },
+            {
+                featureType: "water",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#515c6d" }]
+            },
+            {
+                featureType: "water",
+                elementType: "labels.text.stroke",
+                stylers: [{ color: "#17263c" }]
+            }
+        ] : [];
+
+        this.map.setOptions({ styles });
     }
 
     showNotification(message, type = 'info') {
@@ -729,6 +1036,55 @@ class WorkerDashboard {
             'Ferretería': '#f97316' // naranja
         };
         return colorMap[workType] || '#6b7280';
+    }
+
+    initTheme() {
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeToggleDesktop = document.getElementById('themeToggleDesktop');
+        const themeIcon = themeToggleBtn.querySelector('i');
+        const themeIconDesktop = themeToggleDesktop.querySelector('i');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or use system preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Apply initial theme
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            html.classList.add('dark');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+            themeIconDesktop.classList.remove('fa-moon');
+            themeIconDesktop.classList.add('fa-sun');
+        }
+        
+        // Toggle theme on button click (mobile)
+        themeToggleBtn.addEventListener('click', () => {
+            this.toggleTheme(themeIcon, themeIconDesktop);
+        });
+
+        // Toggle theme on button click (desktop)
+        themeToggleDesktop.addEventListener('click', () => {
+            this.toggleTheme(themeIcon, themeIconDesktop);
+        });
+    }
+
+    adjustModalPosition() {
+        const modal = document.getElementById('profileModal');
+        const modalContent = modal?.querySelector('.modal-content');
+        if (modalContent) {
+            // Asegurar que el modal esté dentro de la ventana visible
+            const viewportHeight = window.innerHeight;
+            const modalHeight = modalContent.offsetHeight;
+            
+            if (modalHeight > viewportHeight) {
+                modalContent.style.height = '90vh';
+                modalContent.style.overflowY = 'auto';
+            } else {
+                modalContent.style.height = '';
+                modalContent.style.overflowY = '';
+            }
+        }
     }
 }
 

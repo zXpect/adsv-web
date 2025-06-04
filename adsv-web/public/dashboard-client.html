@@ -4,6 +4,8 @@
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <title>ADSv - Dashboard Cliente</title>  
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">  
     <link rel="stylesheet" href="static/css/dashboard.css">
@@ -19,50 +21,80 @@
         </div>
     </div>
 
-    <!-- Workers Loading Indicator -->
-    <div id="workersLoadingIndicator" class="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg z-40 flex items-center space-x-3 transition-all duration-300 transform translate-y-full">
+    <!-- Workers Loading Indicator (hidden but functional) -->
+    <div id="workersLoadingIndicator" class="hidden">
         <i class="fas fa-spinner fa-spin text-primary"></i>
         <span class="text-sm">Actualizando trabajadores...</span>
     </div>
 
     <!-- Header -->  
-    <header class="bg-white shadow-md">  
+    <header class="header-wrapper">  
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">  
-            <div class="flex justify-between items-center py-5">  
-                <div class="flex items-center">  
-                    <h1 class="text-2xl font-bold header-title">Dashboard Cliente</h1>  
-                </div>  
-                <div class="flex items-center space-x-4">  
-                    <button id="themeToggle" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-moon text-xl"></i>
-                    </button>
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white text-lg"></i>
-                        </div>
-                        <div class="user-info">
-                            <span id="userName" class="font-semibold">Cargando...</span>
-                            <div id="userEmail" class="text-sm">Cargando...</div>
+            <nav class="navbar navbar-expand-lg py-3">
+                <div class="container-fluid px-0">
+                    <h1 class="text-xl sm:text-2xl font-bold header-title navbar-brand mb-0">Dashboard Cliente</h1>
+                    
+                    <!-- Mobile Controls -->
+                    <div class="d-flex d-lg-none align-items-center">
+                        <button id="themeToggle" class="btn theme-toggle-btn me-2 rounded-circle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="navbar-toggler" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#headerMenu" 
+                                aria-controls="headerMenu" 
+                                aria-expanded="false" 
+                                aria-label="Toggle navigation">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+
+                    <!-- Menu Items -->
+                    <div class="collapse navbar-collapse" id="headerMenu">
+                        <div class="navbar-nav ms-auto align-items-center">
+                            <!-- Desktop Theme Toggle -->
+                            <button id="themeToggleDesktop" class="btn theme-toggle-btn rounded-circle d-none d-lg-block me-3">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                            
+                            <!-- User Info -->
+                            <div class="d-flex align-items-center my-3 my-lg-0 me-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center me-3">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <div>
+                                    <span id="userName" class="font-semibold d-block">Cargando...</span>
+                                    <small id="userEmail" class="user-email">Cargando...</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Navigation Buttons -->
+                            <div class="d-flex flex-column flex-lg-row gap-2">
+                                <button id="viewProfileBtn" class="btn btn-primary w-100 w-lg-auto">
+                                    <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                                </button>
+                                <button id="logoutBtn" class="btn btn-danger w-100 w-lg-auto">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button id="logoutBtn" class="btn btn-danger">  
-                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión  
-                    </button>  
-                </div>  
-            </div>  
+                </div>
+            </nav>
         </div>  
     </header>  
   
     <!-- Main Content -->  
-    <main class="container mx-auto py-8 sm:px-6 lg:px-8">  
+    <main class="container mx-auto py-4 sm:py-8 px-4 sm:px-6 lg:px-8">  
         <!-- Grid Container for Two-Column Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
             <!-- Main Content Column -->
             <div class="lg:col-span-2">
         <!-- Acciones Principales -->  
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">  
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-4 sm:gap-6 mb-4 sm:mb-8">  
                     <div class="card">  
-                <div class="p-6">  
+                <div class="p-4 sm:p-6">  
                     <div class="flex items-center">  
                                 <div class="flex-shrink-0 p-3 bg-green-100 rounded-lg">  
                                     <i class="fas fa-plus icon-green text-3xl"></i>  
@@ -73,7 +105,7 @@
                         </div>  
                     </div>  
                             <div class="mt-5">  
-                                <button id="newRequestBtn" class="btn w-full" style="background-color: #10B981; color: white; border-color: #10B981;" onmouseover="this.style.backgroundColor='#059669'; this.style.borderColor='#059669';" onmouseout="this.style.backgroundColor='#10B981'; this.style.borderColor='#10B981';">  
+                                <button id="newRequestBtn" class="btn w-full sm:w-auto" style="background-color: #10B981; color: white; border-color: #10B981;">  
                             Crear Solicitud  
                         </button>  
                     </div>  
@@ -82,7 +114,7 @@
         </div>  
 
         <!-- Estadísticas -->  
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">  
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-8">  
                     <div class="card">  
                 <div class="p-5">  
                     <div class="flex items-center">  
@@ -310,7 +342,7 @@
             <div class="modal-content p-6 border w-full max-w-2xl mx-auto">
                 <div class="flex justify-between items-start mb-6">
                     <h3 class="text-xl font-semibold text-primary">Detalles del Trabajador</h3>
-                    <button type="button" onclick="closeWorkerModal()" class="text-secondary hover:text-primary transition-colors">
+                    <button type="button" data-action="close-worker-modal" class="text-secondary hover:text-primary transition-colors">
                         <i class="fas fa-times text-2xl"></i>
                     </button>
                 </div>
@@ -379,10 +411,10 @@
 
                     <!-- Action Buttons -->
                     <div class="flex space-x-4 pt-4 border-t">
-                        <button onclick="requestService(selectedWorkerId)" class="btn btn-primary flex-1">
+                        <button onclick="clientDashboard.requestService(clientDashboard.selectedWorkerId)" class="btn btn-primary flex-1">
                             <i class="fas fa-handshake mr-2"></i>Solicitar Servicio
                         </button>
-                        <button onclick="contactWorker(selectedWorkerId)" class="btn btn-secondary flex-1">
+                        <button onclick="clientDashboard.contactWorker(clientDashboard.selectedWorkerId)" class="btn btn-secondary flex-1">
                             <i class="fas fa-comments mr-2"></i>Contactar
                         </button>
                     </div>
@@ -465,6 +497,9 @@
         </div>
     </div>
   
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- Firebase Scripts -->  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>  
@@ -473,57 +508,136 @@
     <script src="static\js\config\firebase-config.js"></script>
     <script src="static\js\dashboard\client-dashboard.js"></script>
 
-    <script>
-        // Theme toggle functionality
-        function initTheme() {
-            const themeToggleBtn = document.getElementById('themeToggle');
-            const themeIcon = themeToggleBtn.querySelector('i');
-            const html = document.documentElement;
-            
-            // Check for saved theme preference or use system preference
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // Apply initial theme
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                html.classList.add('dark');
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
-            }
-            
-            // Toggle theme on button click
-            themeToggleBtn.addEventListener('click', () => {
-                html.classList.toggle('dark');
-                
-                // Update icon
-                if (html.classList.contains('dark')) {
-                    themeIcon.classList.remove('fa-moon');
-                    themeIcon.classList.add('fa-sun');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeIcon.classList.remove('fa-sun');
-                    themeIcon.classList.add('fa-moon');
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-        }
-
-        // Initialize theme and dashboard when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            clientDashboard = new ClientDashboard();
-        });
-
-        function requestService(workerId) {
-            alert(`Solicitud de servicio para el trabajador ${workerId} - Próximamente`);
-        }
-
-        function closeWorkerModal() {
-            document.getElementById('workerDetailsModal').classList.add('hidden');
-        }
-    </script>
-
     <style>
+        /* Theme variables */
+        :root {
+            --header-bg: #ffffff;
+            --header-text: #1f2937;
+            --header-border: #e5e7eb;
+            --theme-btn-bg: #f3f4f6;
+            --theme-btn-hover: #e5e7eb;
+            --theme-btn-text: #1f2937;
+            --navbar-toggler-bg: #f3f4f6;
+            --navbar-toggler-hover: #e5e7eb;
+            --navbar-toggler-color: #1f2937;
+            --menu-bg: #ffffff;
+            --menu-shadow: rgba(0, 0, 0, 0.1);
+            --menu-border: #e5e7eb;
+            --email-text: #6b7280;
+        }
+
+        /* Dark theme variables */
+        .dark {
+            --header-bg: #1f2937;
+            --header-text: #f9fafb;
+            --header-border: #374151;
+            --theme-btn-bg: #374151;
+            --theme-btn-hover: #4b5563;
+            --theme-btn-text: #f9fafb;
+            --navbar-toggler-bg: #374151;
+            --navbar-toggler-hover: #4b5563;
+            --navbar-toggler-color: #f9fafb;
+            --menu-bg: #1f2937;
+            --menu-shadow: rgba(0, 0, 0, 0.3);
+            --menu-border: #374151;
+            --email-text: #d1d5db;
+        }
+
+        /* User email styles */
+        .user-email {
+            color: var(--email-text);
+            transition: color 0.3s ease;
+        }
+
+        /* Header styles */
+        .header-wrapper {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            border-bottom: 1px solid var(--header-border);
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle-btn {
+            background-color: var(--theme-btn-bg);
+            color: var(--theme-btn-text);
+            border: none;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--theme-btn-hover);
+            color: var(--theme-btn-text);
+        }
+
+        /* Navbar toggler customization */
+        .navbar-toggler {
+            padding: 0.5rem;
+            font-size: 1.25rem;
+            border: none;
+            background: var(--navbar-toggler-bg);
+            color: var(--navbar-toggler-color);
+            border-radius: 9999px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .navbar-toggler:hover {
+            background: var(--navbar-toggler-hover);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        /* Mobile menu adjustments */
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                background: var(--menu-bg);
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-top: 1rem;
+                box-shadow: 0 4px 6px -1px var(--menu-shadow);
+                border: 1px solid var(--menu-border);
+            }
+        }
+
+        /* Header text color adjustments */
+        .header-title {
+            color: var(--header-text);
+        }
+
+        .navbar-brand {
+            color: var(--header-text) !important;
+        }
+
+        /* User info text colors */
+        #userName {
+            color: var(--header-text);
+        }
+
+        #userEmail {
+            color: var(--header-text);
+            opacity: 0.8;
+        }
+
+        /* Smooth transitions for all theme changes */
+        * {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+
         /* Light theme (default) */
         :root {
             --bg-color: #f3f4f6;
@@ -585,11 +699,130 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
+        /* Mobile menu styles */
+        #headerMenu.show {
+            display: flex;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 40;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0.75rem;
+            }
+
+            .card {
+                margin-bottom: 1rem;
+            }
+
+            .card:hover {
+                transform: none;
+            }
+
+            .workers-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.875rem;
+            }
+
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+
+            .text-xl {
+                font-size: 1.25rem;
+            }
+
+            .text-lg {
+                font-size: 1.125rem;
+            }
+
+            #workersMap {
+                height: 300px;
+            }
+
+            .modal-content {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+
+            .worker-card {
+                padding: 1rem;
+            }
+        }
+
         /* Smooth transitions */
         * {
             transition-property: background-color, border-color, color, fill, stroke;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 150ms;
+        }
+
+        /* Reduce animations on mobile */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* Touch-friendly interactions */
+        @media (max-width: 640px) {
+            .btn:active,
+            .card:active,
+            .worker-card:active {
+                transform: scale(0.98);
+            }
+        }
+
+        /* Modal styles */
+        .modal-content {
+            transform: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+                max-height: calc(100vh - 2rem);
+                overflow-y: auto;
+            }
+        }
+
+        /* Fix for iOS Safari 100vh issue */
+        @supports (-webkit-touch-callout: none) {
+            .min-h-screen {
+                min-height: -webkit-fill-available;
+            }
+        }
+
+        /* Ensure modals are always accessible */
+        #profileModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #profileModal.hidden {
+            display: none;
         }
     </style>
 </body>

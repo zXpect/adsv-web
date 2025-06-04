@@ -262,3 +262,242 @@ textarea:focus {
     border: 1px solid var(--border-color);
     color: var(--text-primary);
 }
+
+/* Media query breakpoints */
+@media (max-width: 640px) {
+    .container {
+        padding: 0 0.75rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card:hover {
+        transform: none;
+    }
+
+    .workers-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Mobile menu styles */
+#headerMenu.show {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 40;
+}
+
+/* Responsive card styles */
+.card {
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+@media (min-width: 641px) {
+    .card:hover {
+        transform: translateY(-4px);
+    }
+}
+
+/* Responsive status badge */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Responsive buttons */
+.btn {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+/* Responsive grid layouts */
+.grid {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .grid {
+        gap: 1.5rem;
+    }
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+    
+    .text-xl {
+        font-size: 1.25rem;
+    }
+    
+    .text-lg {
+        font-size: 1.125rem;
+    }
+}
+
+/* Improved mobile touch targets */
+@media (max-width: 640px) {
+    .btn,
+    .input-wrapper,
+    .select-wrapper {
+        min-height: 44px; /* Minimum touch target size */
+    }
+
+    .input-wrapper input,
+    .select-wrapper select {
+        font-size: 16px; /* Prevent iOS zoom on focus */
+    }
+}
+
+/* Responsive map container */
+#workerMap {
+    min-height: 250px;
+    border-radius: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    #workerMap {
+        min-height: 400px;
+    }
+}
+
+/* Responsive modals */
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    margin: 1rem auto;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .modal-content {
+        width: 100%;
+        padding: 1.5rem;
+        margin: 2rem auto;
+    }
+}
+
+/* Improved mobile form elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 16px;
+    border-radius: 0.5rem;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Better mobile scrolling */
+.scrollable-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Loading indicators for mobile */
+.loading-indicator {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Improved mobile shadows */
+@media (max-width: 640px) {
+    .card,
+    .modal-content,
+    .dropdown-content {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Mobile-first animations */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Enhanced touch feedback */
+@media (max-width: 640px) {
+    .btn:active,
+    .card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Improved mobile navigation */
+.mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--border-color);
+    z-index: 40;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.mobile-nav-item.active {
+    color: var(--color-primary);
+}
+
+/* Safe area insets for modern mobile devices */
+@supports (padding: max(0px)) {
+    .mobile-nav {
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+    
+    body {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
